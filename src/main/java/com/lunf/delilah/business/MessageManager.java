@@ -15,22 +15,21 @@ import org.springframework.context.ApplicationContext;
 import javax.annotation.PostConstruct;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;
 
 public class MessageManager {
     private WorkerPool<MessageEvent> workerPool;
 
+    @Autowired
     private RingBuffer<MessageEvent> ringBuffer;
 
     @Value("${num_available_threads}")
     private int threadCount;
 
-    @Value("${ring_buffer_size}")
-    private int ringBufferSize;
-
+    @Autowired
     private SequenceBarrier sequenceBarrier;
 
+    @Autowired
     private ExecutorService executorService;
 
     private MessageProcessor[] processors;
@@ -48,50 +47,41 @@ public class MessageManager {
     private static final Logger logger = LoggerFactory.getLogger(MessageManager.class);
 
     @PostConstruct
-    private void setupMessageManager(){
+    private void setupMessageManager() {
 
-        ringBuffer = RingBuffer.createMultiProducer(MessageEvent.EVENT_FACTORY, ringBufferSize);
+        this.processors = new MessageProcessor[this.threadCount];
 
-        sequenceBarrier = ringBuffer.newBarrier();
-
-        processors =  new MessageProcessor[threadCount];
-
-        for(int i = 0; i<threadCount; i++){
-            processors[i] = applicationContext.getBean(MessageProcessor.class);
+        for (int i = 0; i < this.threadCount; i++) {
+            this.processors[i] = this.applicationContext.getBean(MessageProcessor.class);
         }
 
-        workerPool = new WorkerPool<MessageEvent>(ringBuffer, sequenceBarrier,
-                disruptorPoolExceptionHandler, processors);
+        this.workerPool = new WorkerPool<>(this.ringBuffer, this.sequenceBarrier,
+                this.disruptorPoolExceptionHandler, this.processors);
 
-        ringBuffer.addGatingSequences(workerPool.getWorkerSequences());
-
-        executorService = Executors.newFixedThreadPool(threadCount);
-
+        ringBuffer.addGatingSequences(this.workerPool.getWorkerSequences());
     }
 
-    public void startMessageManager(){
+    public void startMessageManager() {
 
-        overflowQThread.start();
+        this.overflowQThread.start();
 
-        ringBuffer = workerPool.start(executorService);
+        this.ringBuffer = this.workerPool.start(executorService);
     }
 
-    public void process(PushMessage message){
+    public void process(PushMessage message) {
 
-        try{
-            if(ringBuffer.remainingCapacity() > 0){
+        try {
+            if (ringBuffer.remainingCapacity() > 0) {
                 publishToBuffer(message);
-            }
-            else{
+            } else {
                 overflowQ.put(message);
             }
-        }
-        catch(Exception e){
+        } catch (Exception e) {
             logger.error("Exception processing message {}", message.getDeviceNotificationId(), e);
         }
     }
 
-    private void publishToBuffer(PushMessage message){
+    private void publishToBuffer(PushMessage message) {
 
         long sequence = ringBuffer.next();
 
@@ -102,31 +92,30 @@ public class MessageManager {
         ringBuffer.publish(sequence);
     }
 
-    class OverflowManager implements Runnable{
+    class OverflowManager implements Runnable {
 
         @Override
         public void run() {
 
-            do{
+            do {
 
                 try {
 
                     //Thread will sleep until overflowQ notifies
                     PushMessage message = overflowQ.take();
 
-                    while(!ringBuffer.hasAvailableCapacity(1)){
+                    while (!ringBuffer.hasAvailableCapacity(1)) {
                         //Busy spin until capacity frees up
                         //This WILL burn CPU cycles.
                     }
 
                     publishToBuffer(message);
-                }
-                catch (InterruptedException e) {
+                } catch (InterruptedException e) {
                     logger.error("InterruptedException...", e);
                 }
 
             }
-            while(true);
+            while (true);
         }
     }
 
