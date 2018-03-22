@@ -25,7 +25,6 @@ repositories {
 
 dependencies {
 	compile('org.springframework.boot:spring-boot-starter-web')
-	compile('org.springframework.boot:spring-boot-starter-data-jpa')
 	// https://mvnrepository.com/artifact/com.lmax/disruptor
 	compile group: 'com.lmax', name: 'disruptor', version: '3.4.1'
 	compileOnly('org.projectlombok:lombok')
