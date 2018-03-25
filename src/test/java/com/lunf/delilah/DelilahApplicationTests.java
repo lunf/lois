@@ -1,12 +1,15 @@
 package com.lunf.delilah;
 
 import com.lunf.delilah.business.MessageManager;
+import com.lunf.delilah.config.AppConfig;
+import com.lunf.delilah.config.FirebaseConfig;
 import com.lunf.delilah.domain.PushMessage;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.ArrayList;
@@ -15,6 +18,7 @@ import java.util.UUID;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
+@ContextConfiguration(classes = {FirebaseConfig.class, AppConfig.class})
 public class DelilahApplicationTests {
 
 	@Autowired
@@ -43,12 +47,14 @@ public class DelilahApplicationTests {
 	}
 
 	@Test
-	public void processMessage() {
+	public void processMessage() throws Exception {
 		PushMessage pushMessage = new PushMessage();
 		pushMessage.setDeviceNotificationId(UUID.randomUUID().toString());
 		pushMessage.setText("Hello world");
 
 		messageManager.process(pushMessage);
+
+		Thread.sleep(1000);
 	}
 
 	@Test
