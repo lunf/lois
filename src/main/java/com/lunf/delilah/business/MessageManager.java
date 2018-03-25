@@ -88,7 +88,7 @@ public class MessageManager {
         MessageEvent messageEvent = ringBuffer.get(sequence);
         messageEvent.setPushMessage(message);
 
-        logger.info("Publishing message to buffer of type {}", message.getDeviceNotificationId());
+        logger.info("Publishing message to buffer of type {}", message.getText());
         ringBuffer.publish(sequence);
     }
 

@@ -25,8 +25,10 @@ repositories {
 
 dependencies {
 	compile('org.springframework.boot:spring-boot-starter-web')
-	// https://mvnrepository.com/artifact/com.lmax/disruptor
-	compile group: 'com.lmax', name: 'disruptor', version: '3.4.1'
 	compileOnly('org.projectlombok:lombok')
-	testCompile('org.springframework.boot:spring-boot-starter-test')
+    
+    compile 'com.lmax:disruptor:3.4.1'
+    compile 'com.google.firebase:firebase-admin:5.9.0'
+
+    testCompile('org.springframework.boot:spring-boot-starter-test')
 }
