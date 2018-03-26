@@ -2,6 +2,7 @@ package com.lunf.delilah.business;
 
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.messaging.Message;
+import com.google.firebase.messaging.Notification;
 import com.lmax.disruptor.WorkHandler;
 import com.lunf.delilah.domain.MessageEvent;
 import com.lunf.delilah.domain.PushMessage;
@@ -22,8 +23,10 @@ public class MessageProcessor implements WorkHandler<MessageEvent> {
         try {
             PushMessage pushMessage = event.getPushMessage();
 
+            Notification notification = new Notification("", pushMessage.getText());
+
             Message message = Message.builder()
-                    .putData("content", pushMessage.getText())
+                    .setNotification(notification)
                     .setToken(pushMessage.getDeviceNotificationId())
                     .build();
 
