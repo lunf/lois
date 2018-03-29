@@ -1,7 +1,7 @@
 package com.lunf.delilah.config;
 
 import com.lunf.delilah.business.MessageManager;
-import com.lunf.delilah.business.MessageProcessor;
+import com.lunf.delilah.business.MessageWorker;
 import com.lunf.delilah.domain.DisruptorPoolExceptionHandler;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.context.annotation.Bean;
@@ -25,7 +25,7 @@ public class AppConfig {
     }
 
     @Bean
-    public MessageProcessor messageProcessor() {
-        return new MessageProcessor();
+    public MessageWorker messageProcessor() {
+        return new MessageWorker();
     }
 }

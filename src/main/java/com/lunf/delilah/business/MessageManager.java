@@ -32,7 +32,7 @@ public class MessageManager {
     @Autowired
     private ExecutorService executorService;
 
-    private MessageProcessor[] processors;
+    private MessageWorker[] workers;
 
     private BlockingQueue<PushMessage> overflowQ = new LinkedBlockingQueue<>();
 
@@ -49,14 +49,14 @@ public class MessageManager {
     @PostConstruct
     private void setupMessageManager() {
 
-        this.processors = new MessageProcessor[this.threadCount];
+        this.workers = new MessageWorker[this.threadCount];
 
         for (int i = 0; i < this.threadCount; i++) {
-            this.processors[i] = this.applicationContext.getBean(MessageProcessor.class);
+            this.workers[i] = this.applicationContext.getBean(MessageWorker.class);
         }
 
         this.workerPool = new WorkerPool<>(this.ringBuffer, this.sequenceBarrier,
-                this.disruptorPoolExceptionHandler, this.processors);
+                this.disruptorPoolExceptionHandler, this.workers);
 
         ringBuffer.addGatingSequences(this.workerPool.getWorkerSequences());
     }
