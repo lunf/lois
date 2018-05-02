@@ -8,9 +8,5 @@ public class MessageEvent {
 
     private PushMessage pushMessage;
 
-    public static final EventFactory<MessageEvent> EVENT_FACTORY = new EventFactory<MessageEvent>() {
-        public MessageEvent newInstance() {
-            return new MessageEvent();
-        }
-    };
+    public static final EventFactory<MessageEvent> EVENT_FACTORY = () -> new MessageEvent();
 }
