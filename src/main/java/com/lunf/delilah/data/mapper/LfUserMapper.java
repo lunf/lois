@@ -7,9 +7,9 @@ import org.apache.ibatis.annotations.*;
 public interface LfUserMapper {
 
     @Select("select * from lf_user where username = #{username}")
-    @Results({
-            @Result(property = "firstName", column = "first_name"),
-            @Result(property = "lastName", column = "last_name")
-    })
     LfUser findByUsername(@Param("username") String username);
+
+
+    @Select("select * from lf_user where id = #{id}")
+    LfUser findUserById(@Param("id") Long id);
 }

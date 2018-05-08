@@ -38,7 +38,7 @@ public class UnitTests {
         System.out.println("-----------------------");
         System.out.println(alphaAndDigits);
         System.out.println("-----------------------");
-        System.out.println(alphaAndDigits.substring(alphaAndDigits.length() - 32,alphaAndDigits.length()));
+        System.out.println(alphaAndDigits.substring(alphaAndDigits.length() - 64,alphaAndDigits.length()));
 
         RandomString session = new RandomString();
         System.out.println("-----------------------");

@@ -34,4 +34,12 @@ public class LfUserMapperTest {
         assertThat(lfUser.getLastName()).isNotEqualTo("Doe1");
 
     }
+
+    @Test
+    public void findLfUserByIdTest() {
+        LfUser lfUser = lfUserMapper.findUserById(0L);
+        assertThat(lfUser.getId()).isEqualTo(0L);
+        assertThat(lfUser.getUsername()).isEqualTo("john.doe@domain.com");
+
+    }
 }
