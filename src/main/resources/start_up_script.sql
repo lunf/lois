@@ -7,20 +7,25 @@ CREATE TABLE IF NOT EXISTS lf_user (
     last_name VARCHAR(128)
 );
 
+
 INSERT INTO lf_user (username, first_name, last_name) VALUES ('john.doe@domain.com', 'John', 'Doe');
 
+--Login table
 
 DROP TABLE IF EXISTS lf_login;
 
 CREATE TABLE IF NOT EXISTS lf_login (
     id BIGINT primary key GENERATED ALWAYS AS IDENTITY,
     username VARCHAR(1024) NOT NULL,
-    password_hash VARCHAR(1024),
+    password_hash VARCHAR(1024) UNIQUE,
     user_id BIGINT NOT NULL,
     login_type SMALLINT NOT NULL
 );
 
 ALTER TABLE lf_login ADD FOREIGN KEY (user_id) REFERENCES lf_user(id);
+
+INSERT INTO lf_login (username, password_hash, user_id, login_type) VALUES ('john.doe@domain.com', '$2a$10$/7PScdp9I0tisbJckn3leunI58GZ1n.w5irYpG1ae/Vd4ljtXXCSe', 0, 1);
+INSERT INTO lf_login (username, password_hash, user_id, login_type) VALUES ('john.doe@domain.com', 'UmfyL4aBCK11tNgEs5CcjC4kv31nFI6Q', 0, 2);
 
 
 DROP TABLE IF EXISTS lf_job;
@@ -30,12 +35,13 @@ CREATE TABLE IF NOT EXISTS lf_job (
     created_at TIMESTAMP(2) WITH TIME ZONE NOT NULL,
     processing_at TIMESTAMP(2) WITH TIME ZONE,
     completed_at TIMESTAMP(2) WITH TIME ZONE,
-    sender_email VARCHAR(128) NOT NULL,
+    sender_username VARCHAR(128) NOT NULL,
     message_type SMALLINT NOT NULL,
     message_title VARCHAR(4096),
     message_body VARCHAR(8192),
     message_metadata VARCHAR(8192),
-    send_to_type SMALLINT NOT NULL
+    send_to_type SMALLINT NOT NULL,
+    devices LONGVARCHAR
 );
 
 DROP TABLE IF EXISTS lf_device;

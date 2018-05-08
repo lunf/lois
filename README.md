@@ -216,9 +216,9 @@ User schema
 
 Job schema
 
-| id | created_at | processing_at | completed_at | sender_email   | message_type | message_title | message_body                | message_metadata                                       | send_to_type |
-|----|------------|---------------|--------------|----------------|--------------|---------------|-----------------------------|--------------------------------------------------------|--------------|
-| 1  | 1525248130 | 1525248173    | 1525248274   | joe@domain.com | 1            | Hello world   | This is hello world message | [{"Nick": "Mario"}, {"Room": "PortugalVSDenmark"}]     | 1            |
+| id | created_at | processing_at | completed_at | sender_username   | message_type | message_title | message_body                | message_metadata                                       | send_to_type | devices                                                            |
+|----|------------|---------------|--------------|-------------------|--------------|---------------|-----------------------------|--------------------------------------------------------|--------------|--------------------------------------------------------------------|
+| 1  | 1525248130 | 1525248173    | 1525248274   | joe@domain.com    | 1            | Hello world   | This is hello world message | [{"Nick": "Mario"}, {"Room": "PortugalVSDenmark"}]     | 1            | ["cDIgA634LOI:A9FP...4pmwKnKYHz", "cDIgA634LOI:A9FP...4pmwKnKYHz"] |
 
 * send_to_type
     * 1 ~ all devices (default)
