@@ -9,11 +9,7 @@ import org.mybatis.spring.boot.test.autoconfigure.MybatisTest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import java.sql.Array;
 import java.time.ZonedDateTime;
-import java.util.ArrayList;
-import java.util.List;
-
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -51,10 +47,11 @@ public class LfJobMapperTest {
         job.setSendToType(4);
         job.setSender(lfUser);
 
+
         lfJobMapper.insert(job);
+        LfJob foundJob = lfJobMapper.findById(job.getId());
 
-        LfJob foundJob = lfJobMapper.findById(0L);
-
+        assertThat(foundJob).isNotNull();
         assertThat(foundJob.getMessageTitle()).isEqualTo(title);
         assertThat(foundJob.getMessageType()).isEqualTo(1);
         assertThat(foundJob.getSender().getUsername()).isEqualTo(lfUser.getUsername());

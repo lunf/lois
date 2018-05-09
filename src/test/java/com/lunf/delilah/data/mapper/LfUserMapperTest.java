@@ -18,6 +18,22 @@ public class LfUserMapperTest {
     private LfUserMapper lfUserMapper;
 
     @Test
+    public void insertLfUserTest() {
+        LfUser lfUser = new LfUser();
+        lfUser.setUsername("jane.doe@domain.com");
+        lfUser.setFirstName("Jane");
+        lfUser.setLastName("Doe");
+
+        lfUserMapper.insert(lfUser);
+
+        LfUser foundUser = lfUserMapper.findById(lfUser.getId());
+
+
+        assertThat(foundUser).isNotNull();
+        assertThat(foundUser.getUsername()).isEqualTo("jane.doe@domain.com");
+    }
+
+    @Test
     public void findLfUserByUsernameTest() {
         LfUser lfUser = lfUserMapper.findByUsername("john.doe@domain.com");
 
@@ -37,7 +53,7 @@ public class LfUserMapperTest {
 
     @Test
     public void findLfUserByIdTest() {
-        LfUser lfUser = lfUserMapper.findUserById(0L);
+        LfUser lfUser = lfUserMapper.findById(0L);
         assertThat(lfUser.getId()).isEqualTo(0L);
         assertThat(lfUser.getUsername()).isEqualTo("john.doe@domain.com");
 
