@@ -49,7 +49,7 @@ DROP TABLE IF EXISTS lf_device;
 CREATE TABLE IF NOT EXISTS lf_device (
     id BIGINT primary key GENERATED ALWAYS AS IDENTITY,
     created_at TIMESTAMP(2) WITH TIME ZONE NOT NULL,
-    notification_id VARCHAR(1024) NOT NULL,
+    notification_id VARCHAR(1024) NOT NULL UNIQUE,
     status SMALLINT NOT NULL,
     device_os VARCHAR(128),
     device_name VARCHAR(128),
