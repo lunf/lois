@@ -1,0 +1,7 @@
+databaseChangeLog:
+  - include:
+      file: "changelog/base-schema.yaml"
+      relativeToChangelogFile: true
+  - include:
+      file: "changelog/insert-user-data.yaml"
+      relativeToChangelogFile: true

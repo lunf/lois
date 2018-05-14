@@ -1,0 +1,55 @@
+databaseChangeLog:
+  - changeSet:
+      id: 10
+      author: lunf
+      changes:
+        - insert:
+            columns:
+            - column:
+                name: username
+                value: "john.doe@domain.com"
+            - column:
+                name: first_name
+                value: "John"
+            - column:
+                name: last_name
+                value: "Doe"
+            tableName: lf_user
+  - changeSet:
+      id: 11
+      author: lunf
+      changes:
+        - insert:
+            columns:
+            - column:
+                name: username
+                value: "john.doe@domain.com"
+            - column:
+                name: password_hash
+                value: "$2a$10$/7PScdp9I0tisbJckn3leunI58GZ1n.w5irYpG1ae/Vd4ljtXXCSe"
+            - column:
+                name: user_id
+                value: 0
+            - column:
+                name: login_type
+                value: 1
+            tableName: lf_login
+  - changeSet:
+      id: 12
+      author: lunf
+      changes:
+        - insert:
+            columns:
+            - column:
+                name: username
+                value: "john.doe@domain.com"
+            - column:
+                name: password_hash
+                value: "UmfyL4aBCK11tNgEs5CcjC4kv31nFI6Q"
+            - column:
+                name: user_id
+                value: 0
+            - column:
+                name: login_type
+                value: 2
+            tableName: lf_login
