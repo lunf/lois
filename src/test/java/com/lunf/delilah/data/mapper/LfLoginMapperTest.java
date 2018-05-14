@@ -1,6 +1,9 @@
 package com.lunf.delilah.data.mapper;
 
 import com.lunf.delilah.data.entity.LfLogin;
+import com.lunf.delilah.data.entity.LfUser;
+import com.lunf.delilah.utilities.RandomString;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mybatis.spring.boot.test.autoconfigure.MybatisTest;
@@ -16,6 +19,49 @@ public class LfLoginMapperTest {
 
     @Autowired
     private LfLoginMapper lfLoginMapper;
+
+    @Autowired
+    private LfUserMapper lfUserMapper;
+
+    private LfUser lfUser;
+
+    private String randomPasswordHash;
+
+    private RandomString randomString;
+
+    @Before
+    public void setup() {
+
+        randomString = new RandomString();
+
+        lfUser = new LfUser();
+
+        lfUser.setLastName("Jame");
+        lfUser.setFirstName("Doe");
+        lfUser.setUsername("jame.doe@domain.com");
+
+        lfUserMapper.insert(lfUser);
+
+    }
+
+    @Test
+    public void insertLoginTest() {
+        randomPasswordHash = randomString.nextString();
+
+        LfLogin lfLogin = new LfLogin();
+        lfLogin.setLoginType(1);
+        lfLogin.setPasswordHash(randomPasswordHash);
+        lfLogin.setUser(lfUser);
+        lfLogin.setUsername(lfUser.getUsername());
+
+        lfLoginMapper.insert(lfLogin);
+
+        LfLogin foundLogin = lfLoginMapper.findByUsername(lfUser.getUsername());
+
+        assertThat(foundLogin).isNotNull();
+        assertThat(foundLogin.getUser().getUsername()).isEqualTo(lfUser.getUsername());
+        assertThat(foundLogin.getPasswordHash()).isEqualTo(randomPasswordHash);
+    }
 
     @Test
     public void getLoginByUsernameTest() {
