@@ -56,4 +56,11 @@ public class LfDeviceMapperTest {
         assertThat(foundDevice).isNotNull();
         assertThat(foundDevice.getNotificationId()).isEqualTo(notificationId);
     }
+
+    @Test
+    public void findDeviceNotFoundByNotificationIdTest() {
+
+        LfDevice lfDevice = lfDeviceMapper.findByNotificationId(notificationId);
+        assertThat(lfDevice).isNull();
+    }
 }
