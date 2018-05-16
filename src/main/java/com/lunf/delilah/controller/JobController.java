@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 
 @RestController
-@RequestMapping("/job")
+@RequestMapping("/jobs")
 public class JobController {
 
     private static final Logger logger = LoggerFactory.getLogger(JobController.class);
