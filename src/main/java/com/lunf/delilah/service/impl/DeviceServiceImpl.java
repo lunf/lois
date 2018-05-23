@@ -7,8 +7,11 @@ import com.lunf.delilah.service.DeviceService;
 import com.lunf.delilah.service.constant.ErrorCode;
 import com.lunf.delilah.service.exception.DelilahException;
 import com.lunf.delilah.service.model.DeviceDTO;
+import com.lunf.delilah.service.model.DeviceStatus;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
+
+import java.time.ZonedDateTime;
 
 @Service
 @AllArgsConstructor
@@ -25,6 +28,12 @@ public class DeviceServiceImpl implements DeviceService {
         LfDevice lfDevice = lfDeviceMapper.findByNotificationId(notificationId);
 
         if (lfDevice == null) {
+
+            deviceDTO.setCreatedAt(ZonedDateTime.now());
+
+            // set device status to OK
+            deviceDTO.setStatus(DeviceStatus.OK);
+
             // insert the device into db
             lfDevice = LfDeviceTransformer.transform(deviceDTO);
 

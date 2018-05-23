@@ -3,8 +3,10 @@ package com.lunf.delilah.controller;
 import com.lunf.delilah.controller.request.DeviceRequest;
 import com.lunf.delilah.controller.transformer.DeviceRequestTransformer;
 import com.lunf.delilah.service.DeviceService;
+import com.lunf.delilah.service.constant.ErrorCode;
 import com.lunf.delilah.service.exception.DelilahException;
 import com.lunf.delilah.service.model.DeviceDTO;
+import com.lunf.delilah.utilities.DateTimeHelper;
 import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,8 +28,8 @@ public class DeviceController {
 
     @PostMapping
     public ResponseEntity<?> createDevice(@RequestBody DeviceRequest deviceRequest) {
-        if(!isValidRequest(deviceRequest)) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        if (!isValidRequest(deviceRequest)) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ErrorCode.FAIL_VALIDATION);
         }
 
         DeviceDTO deviceDTO = DeviceRequestTransformer.transform(deviceRequest);
@@ -38,7 +40,11 @@ public class DeviceController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getErrorCode());
         }
 
-        return ResponseEntity.status(HttpStatus.CREATED).build();
+        // Re-map updated properties
+        deviceRequest.setId(deviceDTO.getId());
+        deviceRequest.setCreated_at(DateTimeHelper.convertToString(deviceDTO.getCreatedAt(), null));
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(deviceRequest);
     }
 
     private boolean isValidRequest(DeviceRequest deviceRequest) {
