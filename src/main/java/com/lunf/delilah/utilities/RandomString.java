@@ -7,13 +7,13 @@ import java.util.Random;
 
 public class RandomString {
 
-    public static final String upper = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    private static final String upper = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
-    public static final String lower = upper.toLowerCase(Locale.ROOT);
+    private static final String lower = upper.toLowerCase(Locale.ROOT);
 
-    public static final String digits = "0123456789";
+    private static final String digits = "0123456789";
 
-    public static final String alphanum = upper + lower + digits;
+    private static final String alphanum = upper + lower + digits;
 
     private final Random random;
 
@@ -32,7 +32,7 @@ public class RandomString {
     /**
      * Create an alphanumeric string generator.
      */
-    public RandomString(int length, Random random) {
+    private RandomString(int length, Random random) {
         this(length, random, alphanum);
     }
 
@@ -57,6 +57,28 @@ public class RandomString {
         for (int idx = 0; idx < buf.length; ++idx)
             buf[idx] = symbols[random.nextInt(symbols.length)];
         return new String(buf);
+    }
+
+    public static class Builder {
+
+        private int nestedLength = 32;
+
+        private Random secureGenerator = new SecureRandom();
+
+        public Builder setLength(int length) {
+            this.nestedLength = length;
+            return this;
+        }
+
+        public Builder setSecureGenerator(Random random) {
+            this.secureGenerator = random;
+            return this;
+        }
+
+        public String nextString() {
+            RandomString randomString = new RandomString(nestedLength, secureGenerator);
+            return randomString.nextString();
+        }
     }
 
 }

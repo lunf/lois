@@ -196,10 +196,10 @@ so I will make copy of it for this solution for authentication purposes.
 
 Login schema
 
-| id | username       | password_hash                                                | user_id | login_type |
-|----|----------------|--------------------------------------------------------------|---------|------------|
-| 1  | joe@domain.com | $2a$12$8vxYfAWCXe0Hm4gNX8nzwuqWNukOkcMJ1a9G2tD71ipotEZ9f80Vu | 1       | 1          |
-| 2  | joe@domain.com | UmfyL4aBCK11tNgEs5CcjC4kv31nFI6Q                             | 1       | 2          |
+| id | username       | password_hash                                                | user_id | login_type | token                            |
+|----|----------------|--------------------------------------------------------------|---------|------------|----------------------------------|
+| 1  | joe@domain.com | $2a$12$8vxYfAWCXe0Hm4gNX8nzwuqWNukOkcMJ1a9G2tD71ipotEZ9f80Vu | 1       | 1          | heR4rTcM2L8XfdSG9s6DaAN3YQuZxWVq |
+| 2  | joe@domain.com | UmfyL4aBCK11tNgEs5CcjC4kv31nFI6Q                             | 1       | 2          | UmfyL4aBCK11tNgEs5CcjC4kv31nFI6Q |
 
 
  * password_hash: $bcrypt_id$log_rounds$128-bit-salt184-bit-hash [Handle Password BCrypt](http://dustwell.com/how-to-handle-passwords-bcrypt.html)

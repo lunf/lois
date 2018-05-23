@@ -13,4 +13,5 @@ public class LfLogin implements Serializable {
     private String passwordHash;
     private LfUser user;
     private int loginType;
+    private String token;
 }

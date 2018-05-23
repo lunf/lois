@@ -10,6 +10,8 @@ import org.mybatis.spring.boot.test.autoconfigure.MybatisTest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import java.util.Collection;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 
@@ -53,36 +55,80 @@ public class LfLoginMapperTest {
         lfLogin.setPasswordHash(randomPasswordHash);
         lfLogin.setUser(lfUser);
         lfLogin.setUsername(lfUser.getUsername());
+        lfLogin.setToken(randomPasswordHash);
 
         lfLoginMapper.insert(lfLogin);
 
-        LfLogin foundLogin = lfLoginMapper.findByUsername(lfUser.getUsername());
+        Collection<LfLogin> loginCollection = lfLoginMapper.findByUsername(lfUser.getUsername());
 
-        assertThat(foundLogin).isNotNull();
-        assertThat(foundLogin.getUser().getUsername()).isEqualTo(lfUser.getUsername());
-        assertThat(foundLogin.getPasswordHash()).isEqualTo(randomPasswordHash);
+        for (LfLogin foundLogin : loginCollection) {
+            assertThat(foundLogin).isNotNull();
+            assertThat(foundLogin.getUser().getUsername()).isEqualTo(lfUser.getUsername());
+            assertThat(foundLogin.getPasswordHash()).isEqualTo(randomPasswordHash);
+        }
     }
 
     @Test
     public void getLoginByUsernameTest() {
-        LfLogin lfLogin = lfLoginMapper.findByUsername("john.doe@domain.com");
+        Collection<LfLogin> lfLoginCollection = lfLoginMapper.findByUsername("john.doe@domain.com");
 
-        assertThat(lfLogin.getUsername()).isEqualTo("john.doe@domain.com");
-        assertThat(lfLogin.getPasswordHash()).isEqualTo("$2a$10$/7PScdp9I0tisbJckn3leunI58GZ1n.w5irYpG1ae/Vd4ljtXXCSe");
-        assertThat(lfLogin.getLoginType()).isEqualTo(1);
-        assertThat(lfLogin.getUser().getFirstName()).isEqualTo("John");
-        assertThat(lfLogin.getUser().getLastName()).isEqualTo("Doe");
+        for (LfLogin lfLogin : lfLoginCollection) {
+
+            assertThat(lfLogin.getUsername()).isEqualTo("john.doe@domain.com");
+
+            if (lfLogin.getLoginType() == 1) {
+                assertThat(lfLogin.getPasswordHash()).isEqualTo("$2a$10$/7PScdp9I0tisbJckn3leunI58GZ1n.w5irYpG1ae/Vd4ljtXXCSe");
+                assertThat(lfLogin.getToken()).isEqualTo("heR4rTcM2L8XfdSG9s6DaAN3YQuZxWVq");
+            }
+
+            assertThat(lfLogin.getUser().getFirstName()).isEqualTo("John");
+            assertThat(lfLogin.getUser().getLastName()).isEqualTo("Doe");
+        }
 
     }
 
     @Test
     public void getLoginByPasswordHashTest() {
-        LfLogin lfLogin = lfLoginMapper.findByPasswordHash("UmfyL4aBCK11tNgEs5CcjC4kv31nFI6Q");
+        LfLogin lfLogin = lfLoginMapper.findByPasswordHash("$2a$10$/7PScdp9I0tisbJckn3leunI58GZ1n.w5irYpG1ae/Vd4ljtXXCSe");
+
+        assertThat(lfLogin.getUsername()).isEqualTo("john.doe@domain.com");
+        assertThat(lfLogin.getToken()).isEqualTo("heR4rTcM2L8XfdSG9s6DaAN3YQuZxWVq");
+        assertThat(lfLogin.getUser().getFirstName()).isEqualTo("John");
+        assertThat(lfLogin.getUser().getLastName()).isEqualTo("Doe");
+    }
+
+    @Test
+    public void getLoginByTokenTest() {
+        LfLogin lfLogin = lfLoginMapper.findByToken("UmfyL4aBCK11tNgEs5CcjC4kv31nFI6Q");
 
         assertThat(lfLogin.getUsername()).isEqualTo("john.doe@domain.com");
         assertThat(lfLogin.getPasswordHash()).isEqualTo("UmfyL4aBCK11tNgEs5CcjC4kv31nFI6Q");
-        assertThat(lfLogin.getLoginType()).isEqualTo(2);
         assertThat(lfLogin.getUser().getFirstName()).isEqualTo("John");
         assertThat(lfLogin.getUser().getLastName()).isEqualTo("Doe");
+        assertThat(lfLogin.getLoginType()).isEqualTo(2);
+    }
+
+    @Test
+    public void removeLoginTokenTest() {
+        lfLoginMapper.deleteByToken("UmfyL4aBCK11tNgEs5CcjC4kv31nFI6Q");
+
+        LfLogin lfLogin = lfLoginMapper.findByToken("UmfyL4aBCK11tNgEs5CcjC4kv31nFI6Q");
+
+        assertThat(lfLogin).isNull();
+    }
+
+    @Test
+    public void updateLoginTokenTest() {
+        LfLogin lfLogin = lfLoginMapper.findByToken("UmfyL4aBCK11tNgEs5CcjC4kv31nFI6Q");
+
+        assertThat(lfLogin).isNotNull();
+        String token = new RandomString.Builder().nextString();
+
+        lfLoginMapper.updateTokenByUsernameAndLoginType(token, lfLogin.getUsername(), lfLogin.getLoginType());
+
+        LfLogin found = lfLoginMapper.findByToken(token);
+
+        assertThat(found).isNotNull();
+        assertThat(found.getUsername()).isEqualTo(lfLogin.getUsername());
     }
 }

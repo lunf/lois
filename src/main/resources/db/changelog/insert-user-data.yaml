@@ -28,6 +28,9 @@ databaseChangeLog:
                 name: password_hash
                 value: "$2a$10$/7PScdp9I0tisbJckn3leunI58GZ1n.w5irYpG1ae/Vd4ljtXXCSe"
             - column:
+                name: token
+                value: "heR4rTcM2L8XfdSG9s6DaAN3YQuZxWVq"
+            - column:
                 name: user_id
                 value: 0
             - column:
@@ -45,6 +48,9 @@ databaseChangeLog:
                 value: "john.doe@domain.com"
             - column:
                 name: password_hash
+                value: "UmfyL4aBCK11tNgEs5CcjC4kv31nFI6Q"
+            - column:
+                name: token
                 value: "UmfyL4aBCK11tNgEs5CcjC4kv31nFI6Q"
             - column:
                 name: user_id

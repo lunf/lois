@@ -26,3 +26,4 @@ nbdist/
 .nb-gradle/
 gradle/
 out/
+delilah-lunf-firebase-adminsdk.json
