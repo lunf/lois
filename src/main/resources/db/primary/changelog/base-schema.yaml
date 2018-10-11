@@ -1,0 +1,465 @@
+databaseChangeLog:
+  - changeSet:
+      id: 1
+      author: lunf
+      changes:
+        - createTable:
+            tableName: lf_user
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: username
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: first_name
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: last_name
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+  - changeSet:
+      id: 2
+      author: lunf
+      changes:
+        - createTable:
+            tableName: lf_login
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: username
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: password_hash
+                  type: VARCHAR(1024)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: token
+                  type: VARCHAR(1024)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: user_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_login_user
+                    references: lf_user(id)
+              - column:
+                  name: login_type
+                  type: int
+                  constraints:
+                    nullable: false
+  - changeSet:
+      id: 3
+      author: lunf
+      changes:
+        - createTable:
+            tableName: lf_vehicle
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: created_at
+                  type: TIMESTAMP
+                  constraints:
+                    nullable: false
+              - column:
+                  name: registration_number
+                  type: VARCHAR(16)
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: purchased_date
+                  type: TIMESTAMP
+              - column:
+                  name: maker
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: model
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: manufacture_year
+                  type: int
+              - column:
+                  name: type
+                  type: int
+                  constraints:
+                    nullable: false
+              - column:
+                  name: odometer
+                  type: int
+              - column:
+                  name: status
+                  type: int
+                  constraints:
+                    nullable: false
+  - changeSet:
+      id: 4
+      author: lunf
+      changes:
+        - createTable:
+            tableName: lf_staff
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: license_expired_date
+                  type: TIMESTAMP
+              - column:
+                  name: driver_license_number
+                  type: VARCHAR(1024)
+                  constraints:
+                    unique: true
+              - column:
+                  name: status
+                  type: int
+                  constraints:
+                    nullable: false
+              - column:
+                  name: mobile_number
+                  type: VARCHAR(64)
+              - column:
+                  name: name
+                  type: VARCHAR(1024)
+                  constraints:
+                    nullable: false
+  - changeSet:
+      id: 5
+      author: lunf
+      changes:
+        - createTable:
+            tableName: lf_vehicle_activity
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: registration_number
+                  type: VARCHAR(16)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_at
+                  type: TIMESTAMP
+                  constraints:
+                    nullable: false
+              - column:
+                  name: departed_time
+                  type: TIME
+                  constraints:
+                    nullable: false
+              - column:
+                  name: arrival_time
+                  type: TIME
+                  constraints:
+                    nullable: false
+              - column:
+                  name: origin
+                  type: TEXT
+              - column:
+                  name: destination
+                  type: TEXT
+              - column:
+                  name: total_running_in_minute
+                  type: int
+              - column:
+                  name: total_pause_in_minute
+                  type: int
+              - column:
+                  name: distance_with_gps
+                  type: DOUBLE
+              - column:
+                  name: number_of_stop_start
+                  type: int
+              - column:
+                  name: max_speed
+                  type: DOUBLE
+              - column:
+                  name: average_speed
+                  type: DOUBLE
+  - changeSet:
+      id: 6
+      author: lunf
+      changes:
+      - createTable:
+          tableName: lf_vehicle_trip
+          columns:
+          - column:
+              name: id
+              type: BIGINT
+              autoIncrement: true
+              constraints:
+                primaryKey: true
+                nullable: false
+          - column:
+              name: registration_number
+              type: VARCHAR(16)
+              constraints:
+                nullable: false
+          - column:
+              name: created_at
+              type: TIMESTAMP
+              constraints:
+                nullable: false
+          - column:
+              name: departed_time
+              type: TIME
+              constraints:
+                nullable: false
+          - column:
+              name: arrival_time
+              type: TIME
+              constraints:
+                nullable: false
+          - column:
+              name: origin
+              type: VARCHAR(8192)
+          - column:
+              name: destination
+              type: VARCHAR(8192)
+          - column:
+              name: total_running_in_minute
+              type: int
+          - column:
+              name: total_pause_in_minute
+              type: int
+          - column:
+              name: distance_with_gps
+              type: DOUBLE
+          - column:
+              name: distance_with_map
+              type: DOUBLE
+          - column:
+              name: number_of_stop_start
+              type: int
+          - column:
+              name: max_speed
+              type: DOUBLE
+          - column:
+              name: average_speed
+              type: DOUBLE
+  - changeSet:
+      id: 7
+      author: lunf
+      changes:
+      - createTable:
+          tableName: lf_order
+          columns:
+          - column:
+              name: id
+              type: BIGINT
+              autoIncrement: true
+              constraints:
+                primaryKey: true
+                nullable: false
+          - column:
+              name: name
+              type: VARCHAR(1024)
+          - column:
+              name: code
+              type: VARCHAR(32)
+              constraints:
+                nullable: false
+                unique: true
+          - column:
+              name: estimated_completion_date
+              type: TIMESTAMP
+              constraints:
+                nullable: false
+          - column:
+              name: delivery_address
+              type: TEXT
+          - column:
+              name: booking_quota
+              type: int
+          - column:
+              name: type
+              type: int
+              constraints:
+                nullable: false
+  - changeSet:
+      id: 8
+      author: lunf
+      changes:
+      - createTable:
+          tableName: lf_booking_request
+          columns:
+          - column:
+              name: id
+              type: BIGINT
+              autoIncrement: true
+              constraints:
+                primaryKey: true
+                nullable: false
+          - column:
+              name: from_user_id
+              type: BIGINT
+              constraints:
+                nullable: false
+                foreignKeyName: fk_from_user
+                references: lf_user(id)
+          - column:
+              name: request_vehicle_type
+              type: int
+          - column:
+              name: order_code
+              type: VARCHAR(32)
+          - column:
+              name: title
+              type: VARCHAR(1024)
+              constraints:
+                nullable: false
+          - column:
+              name: description
+              type: TEXT
+          - column:
+              name: delivery_address
+              type: VARCHAR(8192)
+              constraints:
+                nullable: false
+          - column:
+              name: created_at
+              type: TIMESTAMP
+              defaultValueComputed: CURRENT_TIMESTAMP
+              constraints:
+                nullable: false
+          - column:
+              name: status
+              type: int
+              constraints:
+                nullable: false
+          - column:
+              name: booked_for
+              type: TIMESTAMP
+              defaultValueComputed: CURRENT_TIMESTAMP
+              constraints:
+                nullable: false
+  - changeSet:
+      id: 9
+      author: lunf
+      changes:
+      - createTable:
+          tableName: lf_booking_execution
+          columns:
+          - column:
+              name: id
+              type: BIGINT
+              autoIncrement: true
+              constraints:
+                primaryKey: true
+                nullable: false
+          - column:
+              name: driver_id
+              type: BIGINT
+              constraints:
+                nullable: false
+                foreignKeyName: fk_execution_staff
+                references: lf_staff(id)
+          - column:
+              name: booking_request_id
+              type: BIGINT
+              constraints:
+                nullable: false
+                foreignKeyName: fk_execution_booking_request
+                references: lf_booking_request(id)
+          - column:
+              name: vehicle_trip_id
+              type: BIGINT
+              constraints:
+                nullable: false
+                foreignKeyName: fk_execution_vehicle_trip
+                references: lf_vehicle_trip(id)
+  - changeSet:
+      id: 10
+      author: lunf
+      changes:
+      - addUniqueConstraint:
+          columnNames: registration_number
+          constraintName: unique_registration_number
+          deferrable: true
+          disabled: true
+          initiallyDeferred: true
+          tableName: lf_vehicle
+  - changeSet:
+      id: 11
+      author: lunf
+      changes:
+      - sql:
+          sql: ALTER TABLE vehicle_coordinator.lf_vehicle_activity MODIFY COLUMN origin TEXT CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL;
+      - sql:
+          sql: ALTER TABLE vehicle_coordinator.lf_vehicle_activity MODIFY COLUMN destination TEXT CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL;
+  - changeSet:
+      id: 12
+      author: lunf
+      changes:
+      - sql:
+          sql: ALTER TABLE vehicle_coordinator.lf_vehicle_trip MODIFY COLUMN origin TEXT CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL;
+      - sql:
+          sql: ALTER TABLE vehicle_coordinator.lf_vehicle_trip MODIFY COLUMN destination TEXT CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL;
+  - changeSet:
+      id: 13
+      author: lunf
+      changes:
+      - sql:
+          sql: ALTER TABLE vehicle_coordinator.lf_order MODIFY COLUMN delivery_address TEXT CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL;
+  - changeSet:
+      id: 14
+      author: lunf
+      changes:
+      - sql:
+          sql: ALTER TABLE vehicle_coordinator.lf_booking_request MODIFY COLUMN title TEXT CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL;
+  - changeSet:
+      id: 15
+      author: lunf
+      changes:
+      - sql:
+          sql: ALTER TABLE vehicle_coordinator.lf_booking_request MODIFY COLUMN description TEXT CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL;
+  - changeSet:
+      id: 16
+      author: lunf
+      changes:
+      - sql:
+          sql: ALTER TABLE vehicle_coordinator.lf_booking_request MODIFY COLUMN delivery_address TEXT CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL;
+

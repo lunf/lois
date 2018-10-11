@@ -1,40 +1,23 @@
-# Delilah Springboot Discruptor
+# Lois
 
 ## Goals
-Send 100k push notification messages per minutes or approx. 1600 messages per second.
-
+Backend server for React JS frontend
+ 
 ### Description
-We need high performance push notification server which can make multiple HTTP requests to FCM server concurrently in
-order to achieve the target. Currently, FCM API allow up to 1000 registered devices per call and number of thread will
-be restricted by CPU core (CPU with 4 core ~ 4 threads and due to Hyper-threaded Intel which can double the thread per
-core). Let make assumption that (run command ```lscpu```):
- * AWS T2.medium: 
-    * Architecture:          x86_64
-    * CPU op-mode(s):        32-bit, 64-bit
-    * Byte Order:            Little Endian
-    * CPU(s):                2
-    * Thread(s) per core:    1
-    * Core(s) per socket:    2
-    * Socket(s):             1
-    * Model name:            Intel(R) Xeon(R) CPU E5-2676 v3 @ 2.40GHz
- * 1000 registered devices per call
- * Approx. 250 ms per call
+Using tech stack:
+ * Spring boot
+ * Spring security
+ * Multiple data source
+ * Mybatis mapping
+ * Liquibase data migration
 
-We have 2 threads (1 socket -> 2 cores per socket = 2 threads) and each of them runs in parallel then we will have the
-following formula:
-
-```
-    number of theads x 1000 (max registered device) x 4 (1 seconds ~ 250 ms per call)
-    2                x 1000                         x 4 = 8000 messages per second (or 480k per minute)
-```
-
-The result of the formula is over our expectation, but we need to take into account that the Internet speed and average
-call per second always fluctuates dramatically.
 
 ### Assumption
-* Use FCM Admin SDK to send push notification
+
 
 ### API
+
+
 
 ### Authentication
 
@@ -112,77 +95,6 @@ How you create unique keys is up to you, but we suggest using V4 UUIDs or anothe
 We'll always send back the same response for requests made with the same key, and keys can't be reused with different 
 request parameters. Keys expire after 24 hours.
 
-#### Register device's notification
-Path: ```/devices```
-Method: ```POST```
-Device object arguments
-
-| name              | type   | description                       |
-|-------------------|--------|-----------------------------------|
-| notification_id   | string | FCM notification id of the device |
-| device_os         | string | OS type of the device             |
-| device_name       | string | The device name                   |
-| device_os_version | string | OS version of the device          |
-| device_model      | string | The device model                  |
-
-Returns
-
-Returns a device object if the call succeeded.
-
-```
-{
-     "id": 12,
-     "created_at": 1515750198,
-     "notification_id": "cDIgA634LOI:A9FP",
-     "device_os": "iOS",
-     "device_name": "DoeiPhone",
-     "device_os_version": "11.0",
-     "device_model": "iPhone"
-}
-```
-
-
-#### Send push notification
-Path: ```/jobs```
-Method: ```POST```
-Job object arguments
-
-| name             | type               | description                                                          |
-|------------------|--------------------|----------------------------------------------------------------------|
-| message_type     | int                | 1 ~ normal push message                                              |
-|                  |                    | 2 ~ whatever message type which you want                             |
-| message_title    | string (optional)  | A message title of the push notification                             |
-| message_body     | string             | A message body of the push notification                              |
-| message_metadata | hash (optional)    | A dictionary of attributes and values for the attributes defined by  |
-|                  |                    | the push notification {"Nick": "Mario", "Room": "PortugalVSDenmark"} |
-| send_to_type     | int                | 1 ~ all devices                                                      |
-|                  |                    | 2 ~ iOS only                                                         |
-|                  |                    | 3 ~ Android only                                                     |
-|                  |                    | 4 ~ Specific device                                                  |
-| devices          | array containing   | ["cDIgA634LOI:A9FP...4pmwKnKYHz", "cDIgA634LOI:A9FP...4pmwKnKYHz"]   |
-|                  | strings (optional) | array containing notification_id of devices                          |
-
-Returns
-
-Returns a job object if the call succeeded.
-```
-{
-  "id": 7,
-  "created_at": 1525248130,
-  "message_type": 1,
-  "message_title": "Hello world",
-  "message_body": "This is my world",
-  "message_metadata": {
-      "Nick": "Mario", 
-      "Room": "PortugalVSDenmark"
-  },
-  "send_to_type": 1,
-  "devices": [
-      "cDIgA634LOI:A9FP...4pmwKnKYHz", 
-      "cDIgA634LOI:A9FP...4pmwKnKYHz"
-  ]
-}
-```
 
 ### Database structure
 It is better to structure database in the way that all required pre-processing is completed before the sending step. In 
@@ -214,58 +126,89 @@ User schema
 | 1  | joe@domain.com | Joe        | Doe       |
  
 
-Job schema
+Vehicle schema
 
-| id | created_at | processing_at | completed_at | sender_username   | message_type | message_title | message_body                | message_metadata                                       | send_to_type | devices                                                            |
-|----|------------|---------------|--------------|-------------------|--------------|---------------|-----------------------------|--------------------------------------------------------|--------------|--------------------------------------------------------------------|
-| 1  | 1525248130 | 1525248173    | 1525248274   | joe@domain.com    | 1            | Hello world   | This is hello world message | [{"Nick": "Mario"}, {"Room": "PortugalVSDenmark"}]     | 1            | ["cDIgA634LOI:A9FP...4pmwKnKYHz", "cDIgA634LOI:A9FP...4pmwKnKYHz"] |
-
-* send_to_type
-    * 1 ~ all devices (default)
-    * 2 ~ iOS only
-    * 3 ~ Android only
-    * 4 ~ Specific device
-    
-* message_type : 
-    * 1 ~ normal push message
-    * 2..n whatever types that you want
+| id | created_at           | registration_number | purchased_date         | maker   | model   | manufacture_year | type | odometer | status |
+|----|----------------------|---------------------|------------------------|---------|---------|------------------|------|----------|--------|
+| 1  | 2017-01-24T20:18:17Z | VIC-888             | 2017-01-24T20:18:17Z   | Ford    | Ranger  | 2016             | 3    | 39765    | 1      |
 
 
-Device schema
+* type (ENUM)
+    * 1 ~ VAN_16
+    * 2 ~ TRUCK_15
+    * 3 ~ PICK_UP
 
-| id | created_at | notification_id               | status | device_os | device_name | device_os_version | device_model |
-|----|------------|-------------------------------|--------|-----------|-------------|-------------------|--------------|
-| 1  | 1525248173 | cDIgA634LOI:A9FP...4pmwKnKYHz | 1      | IOS       | JoeiPhone   | 11.0              | iPhone       |
-| 2  | 1525248274 | cDIgA634LOI:A9FP...4pmwKnKYHz | 1      | ANDROID   | Jane Doe    | 7.0               | GT-I9000     |
-| 3  | 1525248130 | cDIgA634LOI:A9FP...4pmwKnKYHz | 0      | ANDROID   | Allan B     | 6.0               | Nexus One    |
-
-* status
+* status (ENUM)
+    * 0 ~ BROKEN
     * 1 ~ OK
-    * 0 ~ NOK  (need to be removed from database)
+    * 2 ~ IN_SERVICE 
+    
+    
+* odometer ```will be updated daily by combined all distances traveled in that day```
 
-* device_os
-    * IOS ~ iOS device
-    * ANDROID ~ Android device
+Staff schema
 
-* device_name
-    * iOS -> Settings -> General -> About -> Name
-    * Android -> Contact Profile
+| id | name      | mobile_number | driver_license_number  | license_expired_date | status |
+|----|-----------|---------------|------------------------|----------------------|--------|
+| 1  | Jane Lois | 09xxxxxxx     | USD-887-YED-023        | 2022-01-24T00:00:00Z | 1      |
 
-* device_os_version
-    * `[[UIDevice currentDevice] systemVersion]`
-    * `Build.VERSION.RELEASE`
-
-* device_model
-    * ```[[UIDevice currentDevice] model]```
-    * ```os.android.Build.MODEL```
-
-Messaging schema
-
-| id | job_id | device_id | notification_id               | message_type | message_title | message_body                | message_metadata                                       |
-|----|--------|-----------|-------------------------------|--------------|---------------|-----------------------------|--------------------------------------------------------|
-| 1  | 1      | 1         | cDIgA634LOI:A9FP...4pmwKnKYHz | 1            | Hello world   | This is hello world message | [{"Nick": "Mario"}, {"Room": "PortugalVSDenmark"}]     |
-| 2  | 1      | 2         | cDIgA634LOI:A9FP...4pmwKnKYHz | 1            | Hello world   | This is hello world message | [{"Nick": "Mario"}, {"Room": "PortugalVSDenmark"}]     |
+* status (ENUM)
+    * 0 ~ NOK
+    * 1 ~ OK
 
 
+Vehicle Activity schema    
+This table is for importing and manipulate data before it was final. As admin confirmed the data, it will be copied over Vehicle trip
 
-### How can we measure the result
+| id | registration_number | created_at           | departed_time | arrival_time | origin          | destination  | total_running_in_minute | total_pause_in_minute | distance_with_gps | number_of_stop_start | max_speed | average_speed |
+|----|---------------------|----------------------|---------------|--------------|-----------------|--------------|-------------------------|-----------------------|-------------------|----------------------|-----------|---------------|
+| 1  | VIC-888             | 2017-01-24T20:18:17Z | 06:18         | 08:30        | 2 St, Lion Gate | 34 Ln, Labor | 110                     | 15                    | 45                | 2                    | 110       | 60            |
+
+Vehicle Trip schema (final copy of Vehicle Activity data)
+
+| id | registration_number | created_at           | departed_time | arrival_time | origin          | destination  | total_running_in_minute | total_pause_in_minute | distance_with_gps | distance_with_map | number_of_stop_start | max_speed | average_speed |
+|----|---------------------|----------------------|---------------|--------------|-----------------|--------------|-------------------------|-----------------------|-------------------|-------------------|----------------------|-----------|---------------|
+| 1  | VIC-888             | 2017-01-24T20:18:17Z | 06:18         | 08:30        | 2 St, Lion Gate | 34 Ln, Labor | 110                     | 15                    | 45                | 46                | 2                    | 110       | 60            |
+
+
+
+Order schema
+This table is a copy of GTS table (joborder) with specific parameters for this service
+
+| id | name      | code     | delivery_address  | estimated_completion_date | booking_quota | type |
+|----|-----------|----------|-------------------|---------------------------|---------------|------|
+| 1  | Kitchen   | ORD-5555 | 23 John St        | 2018-01-24T00:00:00Z      | 12            | 1    |
+
+* type (ENUM)
+    * 1 ~ house
+    * 2 ~ apartment
+    * 3 ~ condominium
+
+
+Vehicle Booking Request schema
+
+| id | from_user_id | order_code  | title            | description          | delivery_address     | created_at           | booked_for           | request_vehicle_type | status | 
+|----|--------------|-------------|------------------|----------------------|----------------------|----------------------|----------------------|----------------------|--------|
+| 1  | 1            | ORD-5555    | Xe di cong viec  | Goi so sau de giao   | 23 Tay Mo, Tu Liem   | 2018-01-24T00:00:00Z | 2018-01-24T00:00:00Z | 1                    | 1      |
+
+* request_vehicle_type (ENUM) -> check Vehicle schema type
+    
+* status (ENUM)
+    * 0 ~ REQUESTED
+    * 1 ~ CONFIRMED
+    * 2 ~ CANCELLED
+    * 3 ~ COMPLETED
+
+Vehicle Booking Execution schema
+
+| id | driver_id | booking_request_id | vehicle_trip_id |
+|----|-----------|--------------------|-----------------|
+| 1  | 1         | 1                  | 1               |
+
+### Connect with Zalo API to send notification to driver
+
+
+### Connect with HERE Map API to determine the distance
+
+
+'''http://cleanuitemplate.com/admin/react/preview/#/antdesign/table
