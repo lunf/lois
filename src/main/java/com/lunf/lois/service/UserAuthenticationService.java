@@ -28,5 +28,5 @@ public interface UserAuthenticationService {
      *
      * @param loginDTO the user to logout
      */
-    void logout(LoginDTO loginDTO);
+    void logout(Optional<LoginDTO> loginDTO);
 }

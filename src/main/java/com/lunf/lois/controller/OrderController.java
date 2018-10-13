@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/orders")
 @AllArgsConstructor
 public class OrderController {
-    private static final Logger logger = LoggerFactory.getLogger(UserController.class);
+    private static final Logger logger = LoggerFactory.getLogger(SecureUserController.class);
 
 
     @RequestMapping(method = RequestMethod.GET, value = "/{orderName}")

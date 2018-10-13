@@ -1,14 +1,13 @@
-package com.lunf.lois.service.model;
+package com.lunf.lois.controller.request;
 
-import lombok.Builder;
 import lombok.Data;
 
+import java.io.Serializable;
+
 @Data
-@Builder
-public class UserDTO {
+public class RegisterUserRequest implements Serializable {
     private String username;
     private String password;
     private String firstName;
     private String lastName;
-    private String token;
 }

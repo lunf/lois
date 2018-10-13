@@ -9,6 +9,7 @@ import java.time.ZonedDateTime;
 @Data
 @ToString
 public class VehicleActivityDTO {
+    private Long id;
     private String registrationNumber;
     private ZonedDateTime createdAt;
     private LocalTime departedTime;

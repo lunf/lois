@@ -1,6 +1,6 @@
 package com.lunf.lois.controller;
 
-import com.lunf.lois.service.DeviceService;
+import com.lunf.lois.service.VehicleService;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -34,7 +34,7 @@ public class OrderControllerTests {
     private MockMvc mockMvc;
 
     @Autowired
-    private DeviceService deviceService;
+    private VehicleService vehicleService;
 
     @Autowired
     private WebApplicationContext webApplicationContext;

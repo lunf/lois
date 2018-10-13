@@ -1,7 +1,7 @@
 package com.lunf.lois;
 
 import com.lunf.lois.utilities.PasswordHelper;
-import com.lunf.lois.utilities.RandomString;
+import com.lunf.lois.utilities.RandomTokenGenerator;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -40,7 +40,7 @@ public class UnitTests {
         System.out.println("-----------------------");
         System.out.println(alphaAndDigits.substring(alphaAndDigits.length() - 64,alphaAndDigits.length()));
 
-        RandomString session = new RandomString();
+        RandomTokenGenerator session = new RandomTokenGenerator();
         System.out.println("-----------------------");
         System.out.println(session.nextString());
         System.out.println("-----------------------");

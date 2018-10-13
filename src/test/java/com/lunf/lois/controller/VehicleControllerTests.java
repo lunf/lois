@@ -1,8 +1,6 @@
 package com.lunf.lois.controller;
 
-import com.lunf.lois.controller.request.DeviceRequest;
-import com.lunf.lois.service.DeviceService;
-import com.lunf.lois.service.constant.ErrorCode;
+import com.lunf.lois.service.VehicleService;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -13,19 +11,25 @@ import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.mock.http.MockHttpOutputMessage;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.util.ResourceUtils;
 import org.springframework.web.context.WebApplicationContext;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.charset.Charset;
-import java.time.ZonedDateTime;
 import java.util.Arrays;
 
-import static org.hamcrest.Matchers.containsString;
+import static org.assertj.core.api.Assertions.fail;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertNotNull;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.fileUpload;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -34,7 +38,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @RunWith(SpringRunner.class)
 @SpringBootTest
 @AutoConfigureMybatis
-public class DeviceControllerTests {
+public class VehicleControllerTests {
 
     private MediaType contentType = new MediaType(MediaType.APPLICATION_JSON.getType(),
             MediaType.APPLICATION_JSON.getSubtype(),
@@ -43,7 +47,7 @@ public class DeviceControllerTests {
     private MockMvc mockMvc;
 
     @Autowired
-    private DeviceService deviceService;
+    private VehicleService vehicleService;
 
     @Autowired
     private WebApplicationContext webApplicationContext;
@@ -74,49 +78,36 @@ public class DeviceControllerTests {
     }
 
     @Test
-    public void createDeviceFailValidationTest() throws Exception {
-        DeviceRequest deviceRequest = new DeviceRequest();
+    public void uploadVehicleFailTest() throws Exception {
+        final InputStream input = Thread.currentThread().getContextClassLoader().getResourceAsStream("test.png");
 
-        mockMvc.perform(post("/devices").contentType(contentType).content(this.json(deviceRequest)))
+        final MockMultipartFile data = new MockMultipartFile("file", "not_exist.xlsx",
+                "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", input);
+
+        mockMvc.perform(multipart("/vehicles/upload").file(data))
                 .andDo(print())
-                .andExpect(status().isBadRequest())
-                .andExpect(content().string(containsString(ErrorCode.FAIL_VALIDATION.name())));
-
+                .andExpect(status().isBadRequest());
     }
 
     @Test
-    public void createDeviceSuccessTest() throws Exception {
+    public void uploadVehicleSuccessTest() throws Exception {
 
-        String notificationId = "something_should_be_unique";
-        ZonedDateTime now = ZonedDateTime.now();
-        String year = String.valueOf(now.getYear());
 
-        DeviceRequest deviceRequest = new DeviceRequest();
-        deviceRequest.setNotification_id(notificationId);
+        File file = ResourceUtils.getFile("classpath:report_gps.xlsx");
 
-        mockMvc.perform(post("/devices").contentType(contentType).content(this.json(deviceRequest)))
+
+        if (file == null || !file.canRead()) {
+            fail("Fail not found");
+        }
+
+        FileInputStream input = new FileInputStream(file);
+
+        final MockMultipartFile data = new MockMultipartFile("file", "report_gps.xlsx",
+                "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", input);
+
+        mockMvc.perform(multipart("/vehicles/upload").file(data))
                 .andDo(print())
-                .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.notification_id", is(notificationId)))
-                .andExpect(jsonPath("$.created_at", containsString(year)));
-    }
-
-    @Test
-    public void createDeviceDuplicateTest() throws Exception {
-
-        String notificationId = "something_should_be_unique_data";
-        DeviceRequest deviceRequest = new DeviceRequest();
-        deviceRequest.setNotification_id(notificationId);
-
-        mockMvc.perform(post("/devices").contentType(contentType).content(this.json(deviceRequest)))
-                .andDo(print())
-                .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.notification_id", is(notificationId)));
-
-        mockMvc.perform(post("/devices").contentType(contentType).content(this.json(deviceRequest)))
-                .andDo(print())
-                .andExpect(status().isBadRequest())
-                .andExpect(content().string(containsString(ErrorCode.DUPLICATE.name())));
+                .andExpect(status().is2xxSuccessful());
 
     }
 

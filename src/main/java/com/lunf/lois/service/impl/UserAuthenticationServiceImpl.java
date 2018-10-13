@@ -1,16 +1,17 @@
 package com.lunf.lois.service.impl;
 
-import com.lunf.lois.service.model.LoginDTO;
-import com.lunf.lois.utilities.PasswordHelper;
-import com.lunf.lois.utilities.RandomString;
 import com.lunf.lois.data.primary.entity.LfLogin;
 import com.lunf.lois.data.primary.mapper.LfLoginMapper;
 import com.lunf.lois.data.primary.transformer.LfLoginTransformer;
 import com.lunf.lois.service.UserAuthenticationService;
+import com.lunf.lois.service.model.LoginDTO;
+import com.lunf.lois.utilities.PasswordHelper;
+import com.lunf.lois.utilities.RandomTokenGenerator;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -23,7 +24,7 @@ public class UserAuthenticationServiceImpl implements UserAuthenticationService 
     public Optional<String> login(String username, String password) {
 
         Optional<String> token = Optional.empty();
-        Collection<LfLogin> lfLoginCollection = lfLoginMapper.findByUsername(username);
+        List<LfLogin> lfLoginCollection = lfLoginMapper.findByUsername(username);
 
         if (lfLoginCollection == null) {
             return token;
@@ -40,7 +41,7 @@ public class UserAuthenticationServiceImpl implements UserAuthenticationService 
                     if (isValid) {
 
                         if (loginDTO.getToken() == null || loginDTO.getToken().isEmpty()) {
-                            String tokenValue = new RandomString.Builder().nextString();
+                            String tokenValue = new RandomTokenGenerator.Builder().nextString();
                             token = Optional.of(tokenValue);
 
                             // Update database with new token
@@ -77,7 +78,7 @@ public class UserAuthenticationServiceImpl implements UserAuthenticationService 
     }
 
     @Override
-    public void logout(LoginDTO loginDTO) {
+    public void logout(Optional<LoginDTO> loginDTO) {
 
         Optional<LfLogin> lfLogin = LfLoginTransformer.transform(loginDTO);
 

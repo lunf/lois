@@ -78,4 +78,22 @@ public class LfUserMapperTest {
         assertThat(foundUser.getUsername()).isEqualTo("jane.doe@domain.com");
 
     }
+
+    @Test
+    public void checkUserExistTest() {
+        String username = "jane.doe@domain.com";
+
+        LfUser lfUser = new LfUser();
+        lfUser.setUsername(username);
+        lfUser.setFirstName("Jane");
+        lfUser.setLastName("Doe");
+
+        lfUserMapper.insert(lfUser);
+
+        boolean found = lfUserMapper.checkUserExists(username);
+        assertThat(found).isTrue();
+
+        found = lfUserMapper.checkUserExists("not_in_the_database");
+        assertThat(found).isFalse();
+    }
 }

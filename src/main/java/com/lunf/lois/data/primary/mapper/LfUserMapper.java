@@ -18,4 +18,7 @@ public interface LfUserMapper {
 
     @Select("select * from lf_user where id = #{id}")
     LfUser findById(@Param("id") Long id);
+
+    @Select("SELECT EXISTS(SELECT 1 FROM lf_user WHERE username=#{username})")
+    boolean checkUserExists(@Param("username") String username);
 }

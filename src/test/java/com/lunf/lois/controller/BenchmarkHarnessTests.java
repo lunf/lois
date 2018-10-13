@@ -1,8 +1,8 @@
 package com.lunf.lois.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.lunf.lois.controller.request.DeviceRequest;
-import com.lunf.lois.utilities.RandomString;
+import com.lunf.lois.controller.request.RegisterUserRequest;
+import com.lunf.lois.utilities.RandomTokenGenerator;
 import com.lunf.lois.LoisApplication;
 import org.junit.Test;
 import org.openjdk.jmh.annotations.*;
@@ -79,14 +79,12 @@ public class BenchmarkHarnessTests {
 //                .andExpect(status().isOk())
 //                .andExpect(content().string(expectedResult));
 
-        String notificationId = new RandomString.Builder().nextString();
+        String notificationId = new RandomTokenGenerator.Builder().nextString();
         ZonedDateTime now = ZonedDateTime.now();
         String year = String.valueOf(now.getYear());
 
-        DeviceRequest deviceRequest = new DeviceRequest();
-        deviceRequest.setNotification_id(notificationId);
 
-        String jsonInString = mapper.writeValueAsString(deviceRequest);
+        String jsonInString = "";
 
         mockMvc.perform(post("/devices")
                 .header(HttpHeaders.AUTHORIZATION, "Bearer UmfyL4aBCK11tNgEs5CcjC4kv31nFI6Q")
@@ -112,7 +110,7 @@ public class BenchmarkHarnessTests {
                     .run("--spring.jmx.enabled=false",
                             "--spring.application.name=withSleuth");
             this.mockMvcForTracedController = MockMvcBuilders.standaloneSetup(
-                    this.withSleuth.getBean(DeviceController.class))
+                    this.withSleuth.getBean(VehicleController.class))
                     .build();
 
         }

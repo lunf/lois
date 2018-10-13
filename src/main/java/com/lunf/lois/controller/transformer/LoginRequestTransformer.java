@@ -20,4 +20,18 @@ public class LoginRequestTransformer {
 
         return Optional.of(userRequest);
     }
+
+    public static Optional<LoginDTO> transform(UserRequest userRequest) {
+
+        if(userRequest == null) {
+            return Optional.empty();
+        }
+
+        LoginDTO loginDTO = LoginDTO.builder()
+                .id(Long.valueOf(userRequest.getId()))
+                .username(userRequest.getUsername())
+                .passwordHash(userRequest.getPassword()).build();
+
+        return Optional.of(loginDTO);
+    }
 }

@@ -4,7 +4,7 @@ import com.lunf.lois.data.primary.PrimaryMapper;
 import com.lunf.lois.data.primary.entity.LfLogin;
 import org.apache.ibatis.annotations.*;
 
-import java.util.Collection;
+import java.util.List;
 
 @PrimaryMapper
 public interface LfLoginMapper {
@@ -16,19 +16,19 @@ public interface LfLoginMapper {
 
     @Select("select * from lf_login where username = #{username}")
     @Results({
-            @Result(property = "user", column = "user_id", one = @One(select = "LfUserMapper.findById"))
+            @Result(property = "user", column = "user_id", one = @One(select = "com.lunf.lois.data.primary.mapper.LfUserMapper.findById"))
     })
-    Collection<LfLogin> findByUsername(@Param("username") String username);
+    List<LfLogin> findByUsername(@Param("username") String username);
 
     @Select("select * from lf_login where password_hash = #{passwordHash}")
     @Results({
-            @Result(property = "user", column = "user_id", one = @One(select = "LfUserMapper.findById"))
+            @Result(property = "user", column = "user_id", one = @One(select = "com.lunf.lois.data.primary.mapper.LfUserMapper.findById"))
     })
     LfLogin findByPasswordHash(@Param("passwordHash") String passwordHash);
 
     @Select("select * from lf_login where token = #{token}")
     @Results({
-            @Result(property = "user", column = "user_id", one = @One(select = "LfUserMapper.findById"))
+            @Result(property = "user", column = "user_id", one = @One(select = "com.lunf.lois.data.primary.mapper.LfUserMapper.findById"))
     })
     LfLogin findByToken(@Param("token") String token);
 

@@ -5,7 +5,7 @@ import java.util.Locale;
 import java.util.Objects;
 import java.util.Random;
 
-public class RandomString {
+public class RandomTokenGenerator {
 
     private static final String upper = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
@@ -21,7 +21,7 @@ public class RandomString {
 
     private final char[] buf;
 
-    public RandomString(int length, Random random, String symbols) {
+    public RandomTokenGenerator(int length, Random random, String symbols) {
         if (length < 1) throw new IllegalArgumentException();
         if (symbols.length() < 2) throw new IllegalArgumentException();
         this.random = Objects.requireNonNull(random);
@@ -32,21 +32,21 @@ public class RandomString {
     /**
      * Create an alphanumeric string generator.
      */
-    private RandomString(int length, Random random) {
+    private RandomTokenGenerator(int length, Random random) {
         this(length, random, alphanum);
     }
 
     /**
      * Create an alphanumeric strings from a secure generator.
      */
-    public RandomString(int length) {
+    public RandomTokenGenerator(int length) {
         this(length, new SecureRandom());
     }
 
     /**
      * Create session identifiers.
      */
-    public RandomString() {
+    public RandomTokenGenerator() {
         this(32);
     }
 
@@ -76,8 +76,8 @@ public class RandomString {
         }
 
         public String nextString() {
-            RandomString randomString = new RandomString(nestedLength, secureGenerator);
-            return randomString.nextString();
+            RandomTokenGenerator randomTokenGenerator = new RandomTokenGenerator(nestedLength, secureGenerator);
+            return randomTokenGenerator.nextString();
         }
     }
 

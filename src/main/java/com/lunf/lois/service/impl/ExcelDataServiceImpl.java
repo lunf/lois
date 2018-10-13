@@ -1,17 +1,17 @@
 package com.lunf.lois.service.impl;
 
-import com.lunf.lois.service.GpsDataService;
+import com.lunf.lois.service.ExcelDataService;
 import com.lunf.lois.service.constant.ErrorCode;
 import com.lunf.lois.service.exception.DelilahException;
 import com.lunf.lois.service.model.VehicleActivityDTO;
 import com.lunf.lois.utilities.DateTimeHelper;
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.xssf.usermodel.XSSFWorkbookFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
 import java.io.IOException;
 import java.time.LocalTime;
 import java.time.ZonedDateTime;
@@ -20,9 +20,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
-public class GpsDataServiceImpl implements GpsDataService {
+public class ExcelDataServiceImpl implements ExcelDataService {
 
-    private final Logger logger = LoggerFactory.getLogger(GpsDataServiceImpl.class);
+    private final Logger logger = LoggerFactory.getLogger(ExcelDataServiceImpl.class);
 
     private static final String START_DATA_ROW = "#startLoop";
     private static final String END_DATA_ROW = "#endLoop";
@@ -33,16 +33,17 @@ public class GpsDataServiceImpl implements GpsDataService {
     private static DateTimeFormatter hourMinuteFormatter = DateTimeFormatter.ofPattern(hourMinutePattern);
 
     @Override
-    public void processDataImport(File uploadedFile) throws DelilahException {
+    public List<VehicleActivityDTO> processVehicleData(MultipartFile uploadedFile) throws DelilahException {
 
-        logger.debug("Testing --- for parsing data " + uploadedFile.getName());
+        logger.debug("process data import --- for parsing Excel " + uploadedFile.getName());
         List<VehicleActivityDTO> carActivities = new ArrayList<>();
         try {
             Workbook wb = null;
-            if (!uploadedFile.exists()) {
-                wb = new HSSFWorkbook();
+            if (uploadedFile == null || uploadedFile.isEmpty()) {
+                logger.debug("File upload is empty is null");
+                throw new DelilahException(ErrorCode.FAIL_VALIDATION);
             } else {
-                wb = WorkbookFactory.create(uploadedFile);
+                wb = XSSFWorkbookFactory.create(uploadedFile.getInputStream());
             }
 
             DataFormatter formatter = new DataFormatter();
@@ -151,6 +152,8 @@ public class GpsDataServiceImpl implements GpsDataService {
         }
 
         logger.debug("Parsing data completed with size " + carActivities.size());
+
+        return carActivities;
     }
 
 }

@@ -3,7 +3,7 @@ package com.lunf.lois.data.primary.mapper;
 import com.lunf.lois.config.PrimaryDatabaseConfig;
 import com.lunf.lois.data.primary.entity.LfLogin;
 import com.lunf.lois.data.primary.entity.LfUser;
-import com.lunf.lois.utilities.RandomString;
+import com.lunf.lois.utilities.RandomTokenGenerator;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.context.annotation.Profile;
 import org.springframework.test.context.ContextConfiguration;
@@ -38,12 +38,12 @@ public class LfLoginMapperTest {
 
     private String randomPasswordHash;
 
-    private RandomString randomString;
+    private RandomTokenGenerator randomTokenGenerator;
 
     @Before
     public void setup() {
 
-        randomString = new RandomString();
+        randomTokenGenerator = new RandomTokenGenerator();
 
         lfUser = new LfUser();
 
@@ -57,7 +57,7 @@ public class LfLoginMapperTest {
 
     @Test
     public void insertLoginTest() {
-        randomPasswordHash = randomString.nextString();
+        randomPasswordHash = randomTokenGenerator.nextString();
 
         LfLogin lfLogin = new LfLogin();
         lfLogin.setLoginType(1);
@@ -131,7 +131,7 @@ public class LfLoginMapperTest {
         LfLogin lfLogin = lfLoginMapper.findByToken("UmfyL4aBCK11tNgEs5CcjC4kv31nFI6Q");
 
         assertThat(lfLogin).isNotNull();
-        String token = new RandomString.Builder().nextString();
+        String token = new RandomTokenGenerator.Builder().nextString();
 
         lfLoginMapper.updateTokenByUsernameAndLoginType(token, lfLogin.getUsername(), lfLogin.getLoginType());
 
