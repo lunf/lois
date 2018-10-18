@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
+
 @AllArgsConstructor
 @JsonFormat(shape = JsonFormat.Shape.OBJECT)
 @Getter
@@ -18,8 +19,15 @@ public enum ErrorCode {
     DUPLICATE_USER_NAME(2001, "Username taken"),
 
     // Data conversion error, start at 3xxx
-    PARSING_DATA_ERROR(3000, "Unable to parse data");
+    PARSING_DATA_ERROR(3000, "Unable to parse data"),
+
+    // Data layer exception, start at 4xxx
+    ERROR_IN_DATABASE_LAYER(4000, "Error in database layer");
 
     private final int code;
-    private final String message;
+    private String message;
+
+    public void setDetailMessage(String detailMessage) {
+        this.message = detailMessage;
+    }
 }

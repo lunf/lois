@@ -1,6 +1,6 @@
 package com.lunf.lois.controller.transformer;
 
-import com.lunf.lois.controller.response.RawVehicleActivityResponse;
+import com.lunf.lois.controller.response.RawVehicleData;
 import com.lunf.lois.service.model.VehicleActivityDTO;
 import com.lunf.lois.utilities.DateTimeHelper;
 
@@ -10,8 +10,8 @@ import java.util.stream.Collectors;
 
 public class VehicleActivityTransformer {
 
-    public static RawVehicleActivityResponse transform(VehicleActivityDTO vehicleActivityDTO) {
-        RawVehicleActivityResponse response = new RawVehicleActivityResponse();
+    public static RawVehicleData transform(VehicleActivityDTO vehicleActivityDTO) {
+        RawVehicleData response = new RawVehicleData();
 
         if (vehicleActivityDTO == null) {
             return  response;
@@ -29,7 +29,7 @@ public class VehicleActivityTransformer {
         return response;
     }
 
-    public static List<RawVehicleActivityResponse> transformToList(List<VehicleActivityDTO> activityDTOList) {
+    public static List<RawVehicleData> transformToList(List<VehicleActivityDTO> activityDTOList) {
         if (activityDTOList == null || activityDTOList.isEmpty()) {
             return new ArrayList<>();
         }

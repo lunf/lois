@@ -26,7 +26,7 @@ public interface LfVehicleActivityMapper {
 
     @Select("<script>" +
             "select * from lf_vehicle_activity " +
-            "<if test='!sort.isEmpty()'>" +
+            "<if test='sort != null and !sort.isEmpty()'>" +
                 "ORDER BY " +
                 "<foreach index='index' item='entry' collection='sort.entrySet()' separator=','>" +
                     "${index} ${entry}" +
@@ -65,4 +65,15 @@ public interface LfVehicleActivityMapper {
 
     @Delete("DELETE FROM lf_vehicle_activity")
     void deleteAll();
+
+    @Delete("<script>" +
+            "DELETE FROM lf_vehicle_activity " +
+            "<if test='idList.size() > 0'>" +
+                "WHERE id IN " +
+                "<foreach item='entry' collection='idList' separator=',' open='(' close=')'>" +
+                    "#{entry}" +
+                "</foreach> " +
+            "</if>" +
+            "</script>")
+    void deleteByIds(@Param("idList") List<Long> idList);
 }

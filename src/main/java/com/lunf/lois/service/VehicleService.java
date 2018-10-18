@@ -10,4 +10,5 @@ import java.util.Map;
 public interface VehicleService {
     void uploadVehicleActivityFile(MultipartFile multipartFile) throws DelilahException;
     List<VehicleActivityDTO> findRawVehicleReportPaginated(int pageNo, int limit, Map<String, String> sort) throws DelilahException;
+    void deleteRawVehicleReport(List<Long> deleteIdList) throws DelilahException;
 }

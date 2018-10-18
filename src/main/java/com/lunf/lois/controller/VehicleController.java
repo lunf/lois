@@ -1,6 +1,6 @@
 package com.lunf.lois.controller;
 
-import com.lunf.lois.controller.response.RawVehicleActivityResponse;
+import com.lunf.lois.controller.response.RawVehicleData;
 import com.lunf.lois.controller.transformer.VehicleActivityTransformer;
 import com.lunf.lois.service.VehicleService;
 import com.lunf.lois.service.constant.ErrorCode;
@@ -44,7 +44,7 @@ public class VehicleController {
     }
 
     @GetMapping(value = "list_raw_report")
-    public ResponseEntity<?> getRawVehicleReport(@RequestParam("page") int page, @RequestParam("limit") int limit,
+    public ResponseEntity<?> getRawVehicleReports(@RequestParam("page") int page, @RequestParam("limit") int limit,
                                                  @RequestParam("sort") Optional<String> sort) {
 
         limit = ControllerHelper.convertPageSize(limit);
@@ -53,13 +53,30 @@ public class VehicleController {
         try {
             List<VehicleActivityDTO> dtoList = vehicleService.findRawVehicleReportPaginated(page, limit, sorts);
 
-            List<RawVehicleActivityResponse> data = VehicleActivityTransformer.transformToList(dtoList);
+            List<RawVehicleData> data = VehicleActivityTransformer.transformToList(dtoList);
 
             return ResponseEntity.ok(data);
         } catch (DelilahException ex) {
             logger.debug("Fail to get raw report list");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getErrorCode());
         }
+    }
+
+    @DeleteMapping(value = "list_raw_report")
+    public ResponseEntity<?> deleteRawReports(@RequestParam("ids") String ids) {
+        List<Long> dataIdList = ControllerHelper.convertVehicleIdList(ids);
+
+        if (dataIdList.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Must included valid Long value.");
+        }
+        try {
+            vehicleService.deleteRawVehicleReport(dataIdList);
+        } catch (DelilahException ex) {
+            logger.debug("Fail to get raw report list");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getErrorCode());
+        }
+
+        return ResponseEntity.ok(null);
     }
 
     private boolean isValidRequest(MultipartFile multipartFile) {

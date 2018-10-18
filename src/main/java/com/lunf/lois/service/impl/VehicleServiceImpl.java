@@ -15,7 +15,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
 
@@ -24,15 +23,6 @@ import java.util.Map;
 public class VehicleServiceImpl implements VehicleService {
 
     private final Logger logger = LoggerFactory.getLogger(VehicleServiceImpl.class);
-
-
-    private static final String START_DATA_ROW = "#startLoop";
-    private static final String END_DATA_ROW = "#endLoop";
-
-    private static final String datePattern = "dd/MM/yyyy";
-    private static final String hourMinutePattern = "HH:mm";
-    private static DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern(datePattern);
-    private static DateTimeFormatter hourMinuteFormatter = DateTimeFormatter.ofPattern(hourMinutePattern);
 
     @Autowired
     private LfVehicleActivityMapper lfVehicleActivityMapper;
@@ -49,7 +39,16 @@ public class VehicleServiceImpl implements VehicleService {
 
         List transformedList = LfVehicleTransformer.transformFromDtoList(activityList);
 
-        lfVehicleActivityMapper.insertBatch(transformedList);
+        try {
+            lfVehicleActivityMapper.insertBatch(transformedList);
+        } catch (Exception ex) {
+            logger.debug("Fail to delete raw vehicle report", ex);
+
+            ErrorCode errorCode = ErrorCode.ERROR_IN_DATABASE_LAYER;
+            errorCode.setDetailMessage(ex.getMessage());
+
+            throw new DelilahException(errorCode);
+        }
 
     }
 
@@ -57,9 +56,31 @@ public class VehicleServiceImpl implements VehicleService {
     public List<VehicleActivityDTO> findRawVehicleReportPaginated(int pageNo, int limit, Map<String, String> sort) throws DelilahException {
 
         int offset = pageNo * limit;
+        try {
+            List<LfVehicleActivity> vehicleActivities = lfVehicleActivityMapper.findAll(offset, limit, sort);
 
-        List<LfVehicleActivity> vehicleActivities = lfVehicleActivityMapper.findAll(offset, limit, sort);
+            return LfVehicleTransformer.transformToDtoList(vehicleActivities);
+        } catch (Exception ex) {
+            logger.debug("Fail to find raw vehicle report paginated", ex);
 
-        return LfVehicleTransformer.transformToDtoList(vehicleActivities);
+            ErrorCode errorCode = ErrorCode.ERROR_IN_DATABASE_LAYER;
+            errorCode.setDetailMessage(ex.getMessage());
+
+            throw new DelilahException(errorCode);
+        }
+    }
+
+    @Override
+    public void deleteRawVehicleReport(List<Long> deleteIdList) throws DelilahException {
+        try {
+            lfVehicleActivityMapper.deleteByIds(deleteIdList);
+        } catch (Exception ex) {
+            logger.debug("Fail to delete raw vehicle report", ex);
+
+            ErrorCode errorCode = ErrorCode.ERROR_IN_DATABASE_LAYER;
+            errorCode.setDetailMessage(ex.getMessage());
+
+            throw new DelilahException(errorCode);
+        }
     }
 }

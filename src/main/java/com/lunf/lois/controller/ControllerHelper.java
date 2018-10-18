@@ -1,8 +1,6 @@
 package com.lunf.lois.controller;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 public class ControllerHelper {
     public static final int DEFAULT_PAGE_SIZE = 25;
@@ -11,7 +9,7 @@ public class ControllerHelper {
 
     public static final String DEFAULT_SORT_ASC = "asc";
 
-    public static final String DEFAULT_SORT_SEPARATOR = ",";
+    public static final String DEFAULT_SEPARATOR = ",";
 
     public static final String DEFAULT_SORT_DIRECTION_SEPARATOR = ":";
 
@@ -44,7 +42,7 @@ public class ControllerHelper {
                 return mapValue;
             }
 
-            String[] keyData = data.split(DEFAULT_SORT_SEPARATOR);
+            String[] keyData = data.split(DEFAULT_SEPARATOR);
 
             for (String key: keyData) {
                 int directionPos = key.indexOf(DEFAULT_SORT_DIRECTION_SEPARATOR);
@@ -60,5 +58,29 @@ public class ControllerHelper {
 
             return mapValue;
         }).get();
+    }
+
+    public static List<Long> convertVehicleIdList(String ids) {
+        if(ids == null || ids.trim().length() < 1) {
+            return new ArrayList<>();
+        }
+
+        String[] idArrays = ids.split(DEFAULT_SEPARATOR);
+        List<Long> idList = new ArrayList<>();
+
+        for (String id : idArrays) {
+            if (id != null && id.trim().length() > 0) {
+                // Check if id is valid
+                try {
+                    Long longValue = Long.valueOf(id);
+
+                    idList.add(longValue);
+                } catch (NumberFormatException ex) {
+                    //Ignored and returned empty data
+                }
+            }
+        }
+
+        return idList;
     }
 }

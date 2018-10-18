@@ -5,7 +5,7 @@ import lombok.Data;
 import java.io.Serializable;
 
 @Data
-public class RawVehicleActivityResponse implements Serializable {
+public class RawVehicleData implements Serializable {
 
     private long id;
     private String regNo;

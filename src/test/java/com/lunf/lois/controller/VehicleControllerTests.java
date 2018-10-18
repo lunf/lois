@@ -121,6 +121,14 @@ public class VehicleControllerTests {
                 .andDo(print()).andExpect(status().is2xxSuccessful());
     }
 
+    @Test
+    public void testDeleteRawActivity() throws Exception {
+
+        mockMvc.perform(delete("/vehicles/list_raw_report?ids=10")
+                .contentType(contentType))
+                .andDo(print()).andExpect(status().is2xxSuccessful());
+    }
+
 
     protected String json(Object o) throws IOException {
         MockHttpOutputMessage mockHttpOutputMessage = new MockHttpOutputMessage();
