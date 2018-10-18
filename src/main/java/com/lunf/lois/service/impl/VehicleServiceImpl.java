@@ -1,5 +1,6 @@
 package com.lunf.lois.service.impl;
 
+import com.lunf.lois.data.primary.entity.LfVehicleActivity;
 import com.lunf.lois.data.primary.mapper.LfVehicleActivityMapper;
 import com.lunf.lois.data.primary.transformer.LfVehicleTransformer;
 import com.lunf.lois.service.ExcelDataService;
@@ -16,6 +17,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Map;
 
 @Service
 @AllArgsConstructor
@@ -45,11 +47,19 @@ public class VehicleServiceImpl implements VehicleService {
             throw new DelilahException(ErrorCode.DATA_EMPTY);
         }
 
-        List transformedList = LfVehicleTransformer.transformList(activityList);
+        List transformedList = LfVehicleTransformer.transformFromDtoList(activityList);
 
         lfVehicleActivityMapper.insertBatch(transformedList);
 
     }
 
+    @Override
+    public List<VehicleActivityDTO> findRawVehicleReportPaginated(int pageNo, int limit, Map<String, String> sort) throws DelilahException {
 
+        int offset = pageNo * limit;
+
+        List<LfVehicleActivity> vehicleActivities = lfVehicleActivityMapper.findAll(offset, limit, sort);
+
+        return LfVehicleTransformer.transformToDtoList(vehicleActivities);
+    }
 }

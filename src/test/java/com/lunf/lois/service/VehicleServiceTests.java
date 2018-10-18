@@ -14,6 +14,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mybatis.spring.boot.test.autoconfigure.MybatisTest;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.data.web.SpringDataWebProperties;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.TestConfiguration;
@@ -27,7 +28,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
+import java.util.HashMap;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -68,7 +69,7 @@ public class VehicleServiceTests {
 
 
     @Test
-    public void uploadVehicleActivityFile() {
+    public void uploadVehicleActivityFileTest() {
 
         try {
             File file = ResourceUtils.getFile("classpath:report_gps.xlsx");
@@ -93,7 +94,37 @@ public class VehicleServiceTests {
         } catch (Exception ex) {
             fail(ex.getMessage());
         }
+    }
 
+    @Test
+    public void getVehicelActivityPagingTest() {
+        SpringDataWebProperties.Pageable pageable = new SpringDataWebProperties.Pageable();
+
+        try {
+
+            File file = ResourceUtils.getFile("classpath:report_gps.xlsx");
+
+
+            if (file == null || !file.canRead()) {
+                fail("Fail not found");
+            }
+
+            FileInputStream input = new FileInputStream(file);
+
+            MultipartFile multipartFile = new MockMultipartFile("report_gps.xlsx",
+                    file.getName(), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", IOUtils.toByteArray(input));
+
+
+            vehicleService.uploadVehicleActivityFile(multipartFile);
+
+            List<VehicleActivityDTO> activityDTOList = vehicleService.findRawVehicleReportPaginated(0, 10, new HashMap<>());
+
+            assertThat(activityDTOList).isNotNull();
+            assertThat(activityDTOList.size()).isEqualTo(1);
+
+        } catch (Exception ex) {
+            fail(ex.getMessage());
+        }
 
     }
 }

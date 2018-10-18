@@ -1,13 +1,11 @@
 package com.lunf.lois.data.primary.mapper;
 
 import com.lunf.lois.data.primary.PrimaryMapper;
-import org.apache.ibatis.annotations.Insert;
-import org.apache.ibatis.annotations.Options;
-import org.apache.ibatis.annotations.Param;
-import org.apache.ibatis.annotations.Select;
 import com.lunf.lois.data.primary.entity.LfVehicleActivity;
+import org.apache.ibatis.annotations.*;
 
 import java.util.List;
+import java.util.Map;
 
 @PrimaryMapper
 public interface LfVehicleActivityMapper {
@@ -25,6 +23,18 @@ public interface LfVehicleActivityMapper {
 
     @Select("select * from lf_vehicle_activity where registration_number = #{rego}")
     List<LfVehicleActivity> findByRego(@Param("rego") String rego);
+
+    @Select("<script>" +
+            "select * from lf_vehicle_activity " +
+            "<if test='!sort.isEmpty()'>" +
+                "ORDER BY " +
+                "<foreach index='index' item='entry' collection='sort.entrySet()' separator=','>" +
+                    "${index} ${entry}" +
+                "</foreach> " +
+            "</if>" +
+            "LIMIT #{offset}, #{limit}" +
+            "</script>")
+    List<LfVehicleActivity> findAll(@Param("offset") int offset, @Param("limit") int limit, @Param("sort") Map<String, String> sort);
 
 
     @Insert({
@@ -52,4 +62,7 @@ public interface LfVehicleActivityMapper {
                     "    </foreach>",
             "</script>"})
     void insertBatch(@Param("lfVehicleActivityList") List<LfVehicleActivity> lfVehicleActivityList);
+
+    @Delete("DELETE FROM lf_vehicle_activity")
+    void deleteAll();
 }

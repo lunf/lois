@@ -1,5 +1,7 @@
 package com.lunf.lois;
 
+import com.lunf.lois.controller.ControllerHelper;
+import com.lunf.lois.utilities.DateTimeHelper;
 import com.lunf.lois.utilities.PasswordHelper;
 import com.lunf.lois.utilities.RandomTokenGenerator;
 import org.junit.Test;
@@ -8,7 +10,14 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import java.nio.charset.Charset;
 import java.security.*;
+import java.time.LocalTime;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Base64;
+import java.util.Map;
+import java.util.Optional;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(SpringRunner.class)
 public class UnitTests {
@@ -75,7 +84,55 @@ public class UnitTests {
 
     }
 
+    @Test
+    public void testParseSortData() {
+        Optional<String> testCaseOne = Optional.of("key1,key2,key3");
+        Map<String, String> caseOneSort = ControllerHelper.convertSort(testCaseOne);
+
+        assertThat(caseOneSort.get("key1")).isEqualTo(ControllerHelper.DEFAULT_SORT_ASC);
+        assertThat(caseOneSort.size()).isEqualTo(3);
 
 
+        Optional<String> testCaseTwo = Optional.of("key1:desc,key2,key3");
+
+        Map<String, String> caseTwoSort = ControllerHelper.convertSort(testCaseTwo);
+        assertThat(caseTwoSort.size()).isEqualTo(3);
+        assertThat(caseTwoSort.get("key1")).isEqualTo("desc");
+        assertThat(caseTwoSort.get("key3")).isEqualTo("asc");
+
+
+        Optional<String> testCaseThree = Optional.of("key1:asc,key2:desc,key3:asc");
+        Map<String, String> caseThreeSort = ControllerHelper.convertSort(testCaseThree);
+        assertThat(caseThreeSort.size()).isEqualTo(3);
+        assertThat(caseThreeSort.get("key1")).isEqualTo("asc");
+        assertThat(caseThreeSort.get("key2")).isEqualTo("desc");
+        assertThat(caseThreeSort.get("key3")).isEqualTo("asc");
+
+        Map<String, String> caseFourSort = ControllerHelper.convertSort(null);
+        assertThat(caseFourSort.size()).isEqualTo(0);
+
+        Map<String, String> caseFiveSort = ControllerHelper.convertSort(Optional.empty());
+        assertThat(caseFiveSort.size()).isEqualTo(0);
+
+        Map<String, String> caseSixSort = ControllerHelper.convertSort(Optional.of(""));
+        assertThat(caseSixSort.size()).isEqualTo(0);
+    }
+
+
+    @Test
+    public void testDateTimeConverter() {
+        String dateTime = DateTimeHelper.convertToString(ZonedDateTime.now(), DateTimeFormatter.RFC_1123_DATE_TIME);
+
+        System.out.println(dateTime);
+
+        String dateString = DateTimeHelper.convertToDateString(ZonedDateTime.now());
+
+        System.out.println(dateString);
+
+        String timeString = DateTimeHelper.convertToTimeString(LocalTime.now().plusHours(10));
+
+        System.out.println(timeString);
+
+    }
 
 }

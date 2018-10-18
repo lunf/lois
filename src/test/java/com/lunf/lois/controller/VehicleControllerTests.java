@@ -15,6 +15,8 @@ import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.util.ResourceUtils;
 import org.springframework.web.context.WebApplicationContext;
 
@@ -24,13 +26,13 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 import static org.assertj.core.api.Assertions.fail;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertNotNull;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.fileUpload;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -73,7 +75,7 @@ public class VehicleControllerTests {
 
     @Test
     public void shouldReturn400CodeTest() throws Exception {
-        mockMvc.perform(post("/devices").contentType(contentType))
+        mockMvc.perform(post("/vehicles").contentType(contentType))
                 .andDo(print()).andExpect(status().isBadRequest());
     }
 
@@ -109,6 +111,14 @@ public class VehicleControllerTests {
                 .andDo(print())
                 .andExpect(status().is2xxSuccessful());
 
+    }
+
+    @Test
+    public void testGetRawActivity() throws Exception {
+
+        mockMvc.perform(get("/vehicles/list_raw_report?page=1&limit=10")
+                .contentType(contentType))
+                .andDo(print()).andExpect(status().is2xxSuccessful());
     }
 
 
