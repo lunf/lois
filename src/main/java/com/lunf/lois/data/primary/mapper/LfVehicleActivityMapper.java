@@ -21,6 +21,18 @@ public interface LfVehicleActivityMapper {
     @Select("select * from lf_vehicle_activity where id = #{id}")
     LfVehicleActivity findById(@Param("id") Long id);
 
+    @Select("<script>" +
+            "select * from lf_vehicle_activity " +
+            "<if test='idList != null and !idList.isEmpty()'>" +
+                "WHERE id IN " +
+                "<foreach item='id' collection='idList' open='(' separator=',' close=')'>" +
+                    "#{id}" +
+                "</foreach>" +
+            "</if>" +
+            "LIMIT ${idList.size()}" +
+    "</script>")
+    List<LfVehicleActivity> findByIds(@Param("idList") List<Long> ids);
+
     @Select("select * from lf_vehicle_activity where registration_number = #{rego}")
     List<LfVehicleActivity> findByRego(@Param("rego") String rego);
 

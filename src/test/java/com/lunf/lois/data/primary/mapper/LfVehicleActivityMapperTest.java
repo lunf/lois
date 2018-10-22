@@ -241,64 +241,13 @@ public class LfVehicleActivityMapperTest {
     }
 
     @Test
-    public void findAllPagingMultipleSortByTest() throws Exception {
+    public void findAllPagingMultipleSortByTest() {
 
         lfVehicleActivityMapper.deleteAll();
 
         String firstRego = "1";
 
-        ZonedDateTime now = ZonedDateTime.now();
-        LfVehicleActivity lfVehicleAct = new LfVehicleActivity();
-
-        lfVehicleAct.setRegistrationNumber(firstRego);
-        lfVehicleAct.setCreatedAt(now);
-        lfVehicleAct.setDepartedTime(LocalTime.of(6,52));
-        lfVehicleAct.setArrivalTime(LocalTime.of(9,43));
-        lfVehicleAct.setOrigin("TP. Hà Nội");
-        lfVehicleAct.setDestination("TP. Hà Nội");
-        lfVehicleAct.setTotalRunningInMinute(114);
-        lfVehicleAct.setTotalPauseInMinute(1318);
-        lfVehicleAct.setDistanceWithGps(81.57);
-        lfVehicleAct.setNumberOfStopStart(19);
-        lfVehicleAct.setMaxSpeed(81D);
-        lfVehicleAct.setAverageSpeed(42D);
-
-        Thread.sleep(100);
-
-        LfVehicleActivity lfVehicleActivity = new LfVehicleActivity();
-
-        lfVehicleActivity.setRegistrationNumber(regNo);
-        lfVehicleActivity.setCreatedAt(now.minusDays(1));
-        lfVehicleActivity.setDepartedTime(LocalTime.of(12,52));
-        lfVehicleActivity.setArrivalTime(LocalTime.of(13,43));
-        lfVehicleActivity.setOrigin("TP. Hà Nội");
-        lfVehicleActivity.setDestination("TP. Hà Nội");
-        lfVehicleActivity.setTotalRunningInMinute(114);
-        lfVehicleActivity.setTotalPauseInMinute(1318);
-        lfVehicleActivity.setDistanceWithGps(81.57);
-        lfVehicleActivity.setNumberOfStopStart(19);
-        lfVehicleActivity.setMaxSpeed(81D);
-        lfVehicleActivity.setAverageSpeed(42D);
-
-        LfVehicleActivity third = new LfVehicleActivity();
-
-        third.setRegistrationNumber(regNo);
-        third.setCreatedAt(now.minusDays(3));
-        third.setDepartedTime(LocalTime.of(12,52));
-        third.setArrivalTime(LocalTime.of(13,43));
-        third.setOrigin("TP. Hà Nội");
-        third.setDestination("TP. Hà Nội");
-        third.setTotalRunningInMinute(114);
-        third.setTotalPauseInMinute(1318);
-        third.setDistanceWithGps(81.57);
-        third.setNumberOfStopStart(19);
-        third.setMaxSpeed(81D);
-        third.setAverageSpeed(42D);
-
-        List<LfVehicleActivity> list = new ArrayList<>();
-        list.add(lfVehicleAct);
-        list.add(lfVehicleActivity);
-        list.add(third);
+        List<LfVehicleActivity> list = createVehicleList();
 
         lfVehicleActivityMapper.insertBatch(list);
 
@@ -338,6 +287,39 @@ public class LfVehicleActivityMapperTest {
 
         lfVehicleActivityMapper.deleteAll();
 
+        List<LfVehicleActivity> list = createVehicleList();
+
+        lfVehicleActivityMapper.insertBatch(list);
+
+        List<LfVehicleActivity> beforeDeleteData = lfVehicleActivityMapper.findAll(0, 100, new HashMap<>());
+
+
+        assertThat(beforeDeleteData).isNotNull();
+        assertThat(beforeDeleteData.size()).isGreaterThanOrEqualTo(3);
+
+        Thread.sleep(100);
+        List<Long> ids = new ArrayList<>();
+
+        int noOfIdDeleted = 0;
+        for (LfVehicleActivity data: beforeDeleteData) {
+            ids.add(data.getId());
+            noOfIdDeleted ++;
+            System.out.println(data.getId());
+        }
+
+        ids.remove(0);
+        noOfIdDeleted --;
+        lfVehicleActivityMapper.deleteByIds(ids);
+
+        List<LfVehicleActivity> afterDeleteData = lfVehicleActivityMapper.findAll(0, 100, null);
+
+
+        assertThat(afterDeleteData).isNotNull();
+        assertThat(afterDeleteData.size()).isEqualTo(beforeDeleteData.size() - noOfIdDeleted);
+
+    }
+
+    private List<LfVehicleActivity> createVehicleList() {
         String firstRego = "1";
 
         ZonedDateTime now = ZonedDateTime.now();
@@ -355,8 +337,6 @@ public class LfVehicleActivityMapperTest {
         lfVehicleAct.setNumberOfStopStart(19);
         lfVehicleAct.setMaxSpeed(81D);
         lfVehicleAct.setAverageSpeed(42D);
-
-        Thread.sleep(100);
 
         LfVehicleActivity lfVehicleActivity = new LfVehicleActivity();
 
@@ -393,33 +373,47 @@ public class LfVehicleActivityMapperTest {
         list.add(lfVehicleActivity);
         list.add(third);
 
+        return list;
+    }
+
+    @Test
+    public void getIdsByTest() throws Exception {
+        lfVehicleActivityMapper.deleteAll();
+
+        List<LfVehicleActivity> list = createVehicleList();
         lfVehicleActivityMapper.insertBatch(list);
 
-        List<LfVehicleActivity> beforeDeleteData = lfVehicleActivityMapper.findAll(0, 100, new HashMap<>());
+        List<LfVehicleActivity> getAllData = lfVehicleActivityMapper.findAll(0, 100, new HashMap<>());
 
 
-        assertThat(beforeDeleteData).isNotNull();
-        assertThat(beforeDeleteData.size()).isGreaterThanOrEqualTo(3);
+        assertThat(getAllData).isNotNull();
+        assertThat(getAllData.size()).isGreaterThanOrEqualTo(3);
 
         Thread.sleep(100);
         List<Long> ids = new ArrayList<>();
 
-        int noOfIdDeleted = 0;
-        for (LfVehicleActivity data: beforeDeleteData) {
+        int requiredId = 2;
+        for (LfVehicleActivity data: getAllData) {
             ids.add(data.getId());
-            noOfIdDeleted ++;
+            requiredId --;
             System.out.println(data.getId());
+
+            if (requiredId == 0) {
+                break;
+            }
         }
 
-        ids.remove(0);
-        noOfIdDeleted --;
-        lfVehicleActivityMapper.deleteByIds(ids);
+        List<LfVehicleActivity> requiredData = lfVehicleActivityMapper.findByIds(ids);
 
-        List<LfVehicleActivity> afterDeleteData = lfVehicleActivityMapper.findAll(0, 100, null);
+        assertThat(requiredData).isNotNull();
+        assertThat(requiredData.size()).isEqualTo(ids.size());
 
-
-        assertThat(afterDeleteData).isNotNull();
-        assertThat(afterDeleteData.size()).isEqualTo(beforeDeleteData.size() - noOfIdDeleted);
-
+        for (Long myId: ids) {
+            for (LfVehicleActivity data : requiredData) {
+                if (data.getId() == myId) {
+                    assertThat(true);
+                }
+            }
+        }
     }
 }
