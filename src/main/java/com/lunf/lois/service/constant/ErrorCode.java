@@ -13,6 +13,8 @@ public enum ErrorCode {
     // Validation error, start at 1xxx
     FAIL_VALIDATION(1000,"Fail validation"),
     DATA_EMPTY(1001, "Data empty"),
+    DATA_INCONSISTENCY(1002, "Data inconsistency"),
+
 
     // Data integrity error, start at 2xxx
     DUPLICATE(2000, "Duplicate"),

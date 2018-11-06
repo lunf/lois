@@ -16,7 +16,9 @@ public class LfVehicleTrip implements Serializable {
     private LocalTime departedTime;
     private LocalTime arrivalTime;
     private String origin;
+    private Location originLocation;
     private String destination;
+    private Location destinationLocation;
     private Integer totalRunningInMinute;
     private Integer totalPauseInMinute;
     private Double distanceWithGps;
@@ -24,4 +26,10 @@ public class LfVehicleTrip implements Serializable {
     private Integer numberOfStopStart;
     private Double maxSpeed;
     private Double averageSpeed;
+
+    @Data
+    public class Location {
+        private double latitude;
+        private double longitude;
+    }
 }

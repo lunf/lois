@@ -79,6 +79,19 @@ public class VehicleController {
         return ResponseEntity.ok(null);
     }
 
+    @PutMapping(value ="merge_raw_report")
+    public ResponseEntity<?> mergeRawReport(@RequestParam("ids") String ids) {
+
+        List<Long> dataIdList = ControllerHelper.convertVehicleIdList(ids);
+
+        if (dataIdList.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Must included valid Long value.");
+        }
+
+
+        return ResponseEntity.ok(null);
+    }
+
     private boolean isValidRequest(MultipartFile multipartFile) {
         boolean isValid = true;
 
